@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Productivity Hub - Master Your Academic Goals</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>StudyHub</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#about" class="nav-link">About</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                </div>
+                <div class="auth-buttons">
+                    <a href="pages/login.html" class="btn btn-secondary btn-large">
+                        Login
+                    </a>
+                    <a href="pages/signup.html" class="btn btn-primary btn-large">
+                        Sign Up
+                    </a>
+                    
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Master Your Academic Goals</h1>
+                <p class="hero-subtitle">Your complete platform for managing notes, assignments, time, and productivity</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary btn-large" onclick="openSignupModal()">
+                        <i class="fas fa-user-plus"></i> Get Started
+                    </button>
+                    <button class="btn btn-secondary btn-large" onclick="openLoginModal()">
+                        <i class="fas fa-sign-in-alt"></i> Already a Member?
+                    </button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="hero-illustration">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Powerful Features to Boost Your Productivity</h2>
+            <div class="features-grid">
+                <!-- Notes Management -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sticky-note"></i>
+                    </div>
+                    <h3>Smart Notes</h3>
+                    <p>Create, organize, and search through your study notes with tags and categories for easy access.</p>
+                </div>
+
+                <!-- Assignment Tracker -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h3>Assignment Tracker</h3>
+                    <p>Keep track of all your assignments and exams with deadlines and priority levels.</p>
+                </div>
+
+                <!-- Study Timer -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-hourglass-start"></i>
+                    </div>
+                    <h3>Pomodoro Timer</h3>
+                    <p>Focus-boosting Pomodoro timer to manage study sessions and track your study time.</p>
+                </div>
+
+                <!-- Analytics -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Weekly Analytics</h3>
+                    <p>Visualize your productivity with detailed charts and insights about your study habits.</p>
+                </div>
+
+                <!-- Goal Setting -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3>Goal Setting</h3>
+                    <p>Set and monitor your academic goals to stay motivated and on track.</p>
+                </div>
+
+                <!-- Productivity Score -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3>Productivity Score</h3>
+                    <p>Get a comprehensive productivity score based on your activities and achievements.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="statistics">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3>10,000+</h3>
+                    <p>Active Students</p>
+                </div>
+                <div class="stat-item">
+                    <h3>500K+</h3>
+                    <p>Study Hours Tracked</p>
+                </div>
+                <div class="stat-item">
+                    <h3>98%</h3>
+                    <p>User Satisfaction</p>
+                </div>
+                <div class="stat-item">
+                    <h3>24/7</h3>
+                    <p>Available Access</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <h2 class="section-title">Why Choose StudyHub?</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Designed for Students, Built for Success</h3>
+                    <p>
+                        StudyHub is more than just a productivity tool—it's your personal academic assistant. 
+                        Whether you're juggling multiple assignments, preparing for exams, or trying to build better study habits, 
+                        we have you covered.
+                    </p>
+                    <ul class="benefits-list">
+                        <li><i class="fas fa-check-circle"></i> Easy-to-use interface</li>
+                        <li><i class="fas fa-check-circle"></i> Secure data storage</li>
+                        <li><i class="fas fa-check-circle"></i> Real-time synchronization</li>
+                        <li><i class="fas fa-check-circle"></i> Completely free to start</li>
+                    </ul>
+                </div>
+                <div class="about-image">
+                    <div class="about-illustration">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Transform Your Academic Life?</h2>
+            <p>Join thousands of students already using StudyHub to achieve their goals</p>
+            <div class="cta-buttons">
+                <a href="pages/signup.html" class="btn btn-primary btn-large">
+                    Sign Up Now
+                </a>
+                <a href="pages/login.html" class="btn btn-secondary btn-large">
+                    Login
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>StudyHub</h4>
+                    <p>Your complete academic productivity platform</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 StudyHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/script.js"></script>
+</body>
+</html>
