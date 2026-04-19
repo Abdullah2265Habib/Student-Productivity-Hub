@@ -2,6 +2,7 @@ const containerEl = document.querySelector('.container');
 const checkboxEl = document.querySelector('.form-container .form-row input[type="checkbox"]');
 const nameEl = document.querySelector('.form-container .form-row input[name="name"]');
 const emailEl = document.querySelector('.form-container .form-row input[name="email"]');
+const passwordEl = document.querySelector('.form-container .form-row input[name="password"]');
 const submitBtn = document.querySelector('.form-container .form-row input[type="submit"]');
 
 const sprayer = document.querySelector('.sprayer');
@@ -67,6 +68,7 @@ const state = {
 }
 let nameValid = false;
 let emailValid = false;
+let passwordValid = false;
 
 const emailTl = createEmailTl();
 const gearsTls = createGearsTimelines();
@@ -123,8 +125,17 @@ emailEl.addEventListener('input', () => {
     }
 })
 
+passwordEl.addEventListener('input', () => {
+    passwordValid = passwordEl.value.length > 3;
+    if (passwordValid) {
+        passwordEl.classList.add("valid");
+    } else {
+        passwordEl.classList.remove("valid");
+    }
+})
+
 submitBtn.addEventListener('click', () => {
-    if (emailValid && checkboxEl.checked && nameValid && sprayRepeatCounter > 1) {
+    if (emailValid && checkboxEl.checked && nameValid && passwordValid && sprayRepeatCounter > 1) {
         gsap.to("svg > *", {
             duration: .1,
             opacity: 0,
