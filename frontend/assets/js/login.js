@@ -13,7 +13,7 @@ document.querySelector('.container').addEventListener('submit', function(e) {
     .then(res => res.text())
     .then(msg => {
         if (msg.trim() === "success") {
-            window.location = "../index.html";
+            window.location = "../dashboard.html";
         } else {
             alert("Invalid login");
         }

@@ -3,7 +3,7 @@ body {
     padding: 0;
     margin: 0;
     font-family: sans-serif;
-    background-color: #FAF9F6;
+    background-color: #e2e8f0;
 }
 
 .container {
@@ -44,7 +44,7 @@ svg {
     margin: 0;
     padding: 5px;
     outline: none;
-    border: 2px solid #dddddd;
+    border: 2px solid #292a61;
 }
 
 .form-container .form-row input.valid {
@@ -63,7 +63,7 @@ svg {
     height: 40px;
     cursor: pointer;
     border: none;
-    background-color: #eeeeee;
+    background-color: #000000;
     /*pointer-events: none;*/
 }
 
@@ -85,6 +85,6 @@ svg {
 svg {
     stroke-width: 1.2px;
     /*stroke: #222245;*/
-    stroke: #000000;
+    stroke: #212C43;
     fill: none
 }
