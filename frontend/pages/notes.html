@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Notes – Student Productivity Hub</title>
+    <meta name="description" content="Create, manage and view all your study notes in one place.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/notes.css">
+</head>
+<body>
+
+<!-- ── Navbar ─────────────────────────────────── -->
+<nav class="navbar">
+    <div class="container">
+        <a href="../dashboard.html" class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span>StudyHub</span>
+        </a>
+        <div class="nav-right">
+            <a href="../dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- ── Page Header ────────────────────────────── -->
+<header class="page-header">
+    <h1><i class="fas fa-sticky-note"></i> My Notes</h1>
+    <p>Keep all your study notes and PDFs in one organised place</p>
+</header>
+
+<!-- ── Main Content ───────────────────────────── -->
+<main class="main-container">
+
+    <!-- ── Action Bar (always visible) ─────────── -->
+    <div class="action-bar">
+        <button class="load-notes-btn" id="loadNotesBtn">
+            <i class="fas fa-folder-open"></i> View My Notes
+        </button>
+        <button class="add-note-btn" id="addNoteBtn">
+            <i class="fas fa-plus"></i> Add Note
+        </button>
+    </div>
+
+    <!-- ── Notes Section (hidden until user clicks View My Notes) ── -->
+    <section id="notesSection" style="display:none;">
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="search-wrap">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search notes…" autocomplete="off">
+            </div>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">All Notes</button>
+            <button class="filter-tab" data-filter="text">
+                <i class="fas fa-align-left"></i> Text
+            </button>
+            <button class="filter-tab" data-filter="pdf">
+                <i class="fas fa-file-pdf"></i> PDF
+            </button>
+        </div>
+
+        <!-- Notes Grid -->
+        <div class="notes-grid" id="notesGrid">
+            <!-- Populated by notes.js -->
+        </div>
+
+    </section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════
+     MODAL OVERLAY
+     ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+
+        <!-- ── Step 1: Choose type ──────────────── -->
+        <div class="modal-chooser" id="chooserView">
+            <h2>Add a Note</h2>
+            <p>What type of note would you like to add?</p>
+
+            <div class="choose-grid">
+                <div class="choose-card text-opt" id="textCard">
+                    <i class="fas fa-keyboard"></i>
+                    <span>Write Text</span>
+                    <small>Type your note directly</small>
+                </div>
+                <div class="choose-card pdf-opt" id="pdfCard">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Upload PDF</span>
+                    <small>Attach a PDF document</small>
+                </div>
+            </div>
+
+            <div class="modal-chooser-footer">
+                <button class="btn btn-ghost" id="chooserCancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="chooserNextBtn">
+                    Continue <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ── Step 2a: Text note form ───────────── -->
+        <div class="modal-form" id="textFormView">
+            <div class="modal-form-header">
+                <h2><i class="fas fa-align-left"></i> Write a Text Note</h2>
+                <button class="close-modal-btn" id="closeTextModal" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="textForm">
+                <div class="modal-form-body">
+                    <div class="form-group">
+                        <label for="noteText">
+                            Note Content <span style="color:var(--danger)">*</span>
+                        </label>
+                        <textarea
+                            id="noteText"
+                            name="note_text"
+                            placeholder="Start writing your note here…"
+                            required
+                            maxlength="10000"
+                        ></textarea>
+                    </div>
+                </div>
+                <div class="modal-form-footer">
+                    <button type="button" class="btn btn-ghost" id="textBackBtn">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="textSubmitBtn">
+                        <i class="fas fa-save"></i> Save Note
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ── Step 2b: PDF upload form ──────────── -->
+        <div class="modal-form" id="pdfFormView">
+            <div class="modal-form-header">
+                <h2 class="pdf-title"><i class="fas fa-file-pdf"></i> Upload PDF Note</h2>
+                <button class="close-modal-btn" id="closePdfModal" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="pdfForm" enctype="multipart/form-data">
+                <div class="modal-form-body">
+                    <div class="form-group">
+                        <label>PDF File <span style="color:var(--danger)">*</span></label>
+
+                        <!-- Drop Zone -->
+                        <div class="drop-zone" id="dropZone">
+                            <input type="file" id="pdfFileInput" name="file" accept="application/pdf">
+                            <div class="drop-zone-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <h4>Drag &amp; drop your PDF here</h4>
+                            <p>or click to browse &nbsp;·&nbsp; max 10 MB</p>
+                        </div>
+
+                        <!-- Chosen file display -->
+                        <div class="file-chosen" id="fileChosen">
+                            <i class="fas fa-file-pdf"></i>
+                            <span id="fileChosenName"></span>
+                            <button type="button" class="remove-file" id="removeFileBtn" title="Remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-footer">
+                    <button type="button" class="btn btn-ghost" id="pdfBackBtn">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="pdfSubmitBtn">
+                        <i class="fas fa-upload"></i> Upload PDF
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div><!-- /.modal -->
+</div><!-- /.modal-overlay -->
+
+<!-- ── Toast Container ───────────────────────── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="../assets/js/notes.js"></script>
+</body>
+</html>

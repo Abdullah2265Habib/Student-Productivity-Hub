@@ -73,25 +73,27 @@
                         </div>
                     </div>
 
-                    <!-- Remember / Forgot -->
+                    <!-- Remember / Forgot
                     <div class="form-extras">
                         <label class="form-remember">
                             <input type="checkbox"> Remember me
                         </label>
                         <a href="#" class="form-forgot">Forgot Password?</a>
                     </div>
+                -->
 
                     <!-- Submit -->
                     <button type="submit" class="btn btn-primary" id="login-btn">
                         <i class="fas fa-sign-in-alt"></i> Login
                     </button>
 
-                    <!-- Divider -->
+                    <!-- Divider 
                     <div class="auth-divider">
                         <span>or continue with</span>
                     </div>
+                -->
 
-                    <!-- Social -->
+                    <!-- Social 
                     <div class="social-login">
                         <button type="button" class="social-btn" id="google-login-btn">
                             <i class="fab fa-google"></i> Google
@@ -100,6 +102,7 @@
                             <i class="fab fa-github"></i> GitHub
                         </button>
                     </div>
+                -->
 
                     <!-- Footer Link -->
                     <div class="auth-footer-link">
@@ -152,7 +155,7 @@
                 if (msg.trim() === "success") {
                     window.location = "../dashboard.html";
                 } else {
-                    alert("Invalid login");
+                    alert("Email is not registered or Password is incorrect");
                 }
             })
             .catch(err => console.error(err));
