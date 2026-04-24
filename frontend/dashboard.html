@@ -420,7 +420,7 @@
 <body>
     <script>
 
-        fetch("http://localhost/Student-Productivity-Hub/backend/check_auth.php")
+        fetch("/Student-Productivity-Hub/backend/check_auth.php")
             .then(res=>res.text())
             .then(res=>{
                 if(res=="unauthorized"){
@@ -628,7 +628,7 @@
     <script>
         function logout(){
 
-            fetch("http://localhost/Student-Productivity-Hub/backend/logout.php")
+            fetch("/Student-Productivity-Hub/backend/logout.php")
             .then(()=>{
             window.location = "index.html";
         });
