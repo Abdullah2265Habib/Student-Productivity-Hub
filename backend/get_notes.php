@@ -1,24 +1,13 @@
 <?php
-header('Content-Type: application/json');
-session_start();
 include 'db_config.php';
-
-if (!isset($_SESSION['email'])) {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    exit;
-}
+include 'check_auth.php';
 
 $email = $_SESSION['email'];
 
-$stu = $conn->prepare("SELECT id FROM students WHERE email = ? LIMIT 1");
-$stu->bind_param("s", $email);
-$stu->execute();
-$student_id = $stu->get_result()->fetch_assoc()['id'] ?? null;
+$stu = $conn->query("SELECT id FROM students WHERE email = '$email'");
 
-if (!$student_id) {
-    echo json_encode(['success' => false, 'message' => 'Student not found']);
-    exit;
-}
+$row = $stu->fetch_assoc();
+$student_id = $row['id'];
 
 $stmt = $conn->prepare(
     "SELECT id, note_text, file_path, read_time, created_at, updated_at
