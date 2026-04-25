@@ -428,7 +428,7 @@
                 }
             });
 
-</script>
+    </script>
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="container">
@@ -450,7 +450,7 @@
             <aside class="sidebar">
                 <ul class="sidebar-menu">
                     <li>
-                        <a href="#" class="active">
+                        <a href="dashboard.html" class="active">
                             <i class="fas fa-home"></i>
                             <span>Dashboard</span>
                         </a>
@@ -509,7 +509,9 @@
                             <i class="fas fa-sticky-note"></i>
                         </div>
                         <div class="stat-card-title">Total Notes</div>
-                        <div class="stat-card-value">24</div>
+                        <div class="stat-card-value" id="statsTotalNotes">
+                            <span class="stat-skeleton"></span>
+                        </div>
                     </div>
                     <div class="stat-card success">
                         <div class="stat-card-icon">
@@ -566,27 +568,28 @@
                         <i class="fas fa-history"></i>
                         Recent Notes
                     </h3>
-                    <ul class="item-list">
-                        <li>
-                            <div class="item-info">
-                                <h4>Mathematics - Calculus Chapter 3</h4>
-                                <p>Last updated: 2 hours ago</p>
+                    <ul class="item-list" id="recentNotesList">
+                        <!-- skeleton rows while loading -->
+                        <li class="skel-row">
+                            <div style="flex:1">
+                                <div class="skel-line" style="width:55%;height:14px;margin-bottom:6px;"></div>
+                                <div class="skel-line" style="width:35%;height:11px;"></div>
                             </div>
-                            <span class="item-badge">5 min read</span>
+                            <div class="skel-line" style="width:70px;height:22px;border-radius:2rem;"></div>
                         </li>
-                        <li>
-                            <div class="item-info">
-                                <h4>Physics - Quantum Mechanics Basics</h4>
-                                <p>Last updated: Yesterday</p>
+                        <li class="skel-row">
+                            <div style="flex:1">
+                                <div class="skel-line" style="width:65%;height:14px;margin-bottom:6px;"></div>
+                                <div class="skel-line" style="width:40%;height:11px;"></div>
                             </div>
-                            <span class="item-badge">8 min read</span>
+                            <div class="skel-line" style="width:70px;height:22px;border-radius:2rem;"></div>
                         </li>
-                        <li>
-                            <div class="item-info">
-                                <h4>Chemistry - Organic Reactions</h4>
-                                <p>Last updated: 3 days ago</p>
+                        <li class="skel-row">
+                            <div style="flex:1">
+                                <div class="skel-line" style="width:45%;height:14px;margin-bottom:6px;"></div>
+                                <div class="skel-line" style="width:30%;height:11px;"></div>
                             </div>
-                            <span class="item-badge">10 min read</span>
+                            <div class="skel-line" style="width:70px;height:22px;border-radius:2rem;"></div>
                         </li>
                     </ul>
                 </div>
