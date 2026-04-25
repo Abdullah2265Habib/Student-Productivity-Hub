@@ -46,6 +46,28 @@ const closePdfModal    = document.getElementById('closePdfModal');
 const filterTabs       = document.querySelectorAll('.filter-tab');
 const toastContainer   = document.getElementById('toastContainer');
 
+const editModalOverlay  = document.getElementById('editModalOverlay');
+const editNoteForm      = document.getElementById('editNoteForm');
+const editNoteText      = document.getElementById('editNoteText');
+const editNoteId        = document.getElementById('editNoteId');
+const closeEditModal    = document.getElementById('closeEditModal');
+const editCancelBtn     = document.getElementById('editCancelBtn');
+const editSubmitBtn     = document.getElementById('editSubmitBtn');
+
+const editPdfModalOverlay = document.getElementById('editPdfModalOverlay');
+const editPdfForm         = document.getElementById('editPdfForm');
+const editPdfFileInput    = document.getElementById('editPdfFileInput');
+const editPdfDropZone     = document.getElementById('editPdfDropZone');
+const editPdfFileChosen   = document.getElementById('editPdfFileChosen');
+const editPdfFileChosenName = document.getElementById('editPdfFileChosenName');
+const editPdfRemoveFile   = document.getElementById('editPdfRemoveFile');
+const closeEditPdfModal   = document.getElementById('closeEditPdfModal');
+const editPdfCancelBtn    = document.getElementById('editPdfCancelBtn');
+const editPdfSubmitBtn    = document.getElementById('editPdfSubmitBtn');
+const editPdfNoteId       = document.getElementById('editPdfNoteId');
+
+let editDroppedFile = null;
+
 /* ══════════════════════════════════════════════
    INIT
    ══════════════════════════════════════════════ */
