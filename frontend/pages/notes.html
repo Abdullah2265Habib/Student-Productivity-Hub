@@ -243,6 +243,60 @@
     </div>
 </div>
 
+<!-- ═══════════════════════════════════════════
+     EDIT PDF NOTE MODAL (Replace PDF)
+     ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="editPdfModalOverlay">
+    <div class="modal">
+        <div class="modal-form visible">
+            <div class="modal-form-header">
+                <h2 class="pdf-title"><i class="fas fa-file-pdf"></i> Replace PDF</h2>
+                <button class="close-modal-btn" id="closeEditPdfModal" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editPdfForm" enctype="multipart/form-data">
+                <input type="hidden" id="editPdfNoteId">
+                <div class="modal-form-body">
+                    <p style="color:var(--text-light);font-size:.88rem;margin-bottom:1rem;">
+                        <i class="fas fa-info-circle" style="color:var(--primary)"></i>
+                        Upload a new PDF to replace the existing one.
+                    </p>
+                    <div class="form-group">
+                        <label>New PDF File <span style="color:var(--danger)">*</span></label>
+ 
+                        <div class="drop-zone" id="editPdfDropZone">
+                            <input type="file" id="editPdfFileInput" name="file" accept="application/pdf">
+                            <div class="drop-zone-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <h4>Drag &amp; drop your PDF here</h4>
+                            <p>or click to browse &nbsp;·&nbsp; max 10 MB</p>
+                        </div>
+ 
+                        <div class="file-chosen" id="editPdfFileChosen">
+                            <i class="fas fa-file-pdf"></i>
+                            <span id="editPdfFileChosenName"></span>
+                            <button type="button" class="remove-file" id="editPdfRemoveFile" title="Remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-footer">
+                    <button type="button" class="btn btn-ghost" id="editPdfCancelBtn">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="editPdfSubmitBtn">
+                        <i class="fas fa-upload"></i> Replace PDF
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+ 
+
 <!-- ── Toast Container ───────────────────────── -->
 <div class="toast-container" id="toastContainer"></div>
 
