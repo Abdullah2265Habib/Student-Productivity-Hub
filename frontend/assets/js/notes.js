@@ -413,6 +413,21 @@ function clearFileChosen() {
     fileChosen.style.display  = 'none';
     dropZone.style.display    = 'block';
 }
+/* ── Edit PDF file helpers ───────────────────── */
+function handleEditPdfFileSelect(file) {
+    editDroppedFile = file;
+    editPdfFileChosenName.textContent = file.name;
+    editPdfFileChosen.style.display   = 'flex';
+    editPdfDropZone.style.display     = 'none';
+}
+ 
+function clearEditPdfFileChosen() {
+    editDroppedFile                = null;
+    editPdfFileInput.value         = '';
+    editPdfFileChosen.style.display = 'none';
+    editPdfDropZone.style.display  = 'block';
+}
+ 
 
 /* ══════════════════════════════════════════════
    SUBMIT — TEXT NOTE
