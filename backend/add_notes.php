@@ -11,13 +11,11 @@ $student_id = $row['id'];
 // ── Inputs ────────────────────────────────────────────────────────
 $note_text = isset($_POST['note_text']) ? trim($_POST['note_text']) : '';
 $file_path = null;
-$read_time = null;  // will be calculated below for text notes
+$read_time = null;  
 
 // ── Handle PDF upload ─────────────────────────────────────────────
 if (isset($_FILES['file'])) {
     $err = $_FILES['file']['error'];
-
-
     // Create uploads directory if it doesn't exist
     $upload_dir = __DIR__ . '/uploads/';
     if (!is_dir($upload_dir)) {
@@ -39,19 +37,24 @@ if (!empty($note_text)) {
 }
 
 // ── Insert ────────────────────────────────────────────────────────
-$stmt = $conn->prepare("INSERT INTO notes (note_text, student_id, file_path, read_time) VALUES (?, ?, ?, ?)");
-$stmt->bind_param("sisi", $note_text, $student_id, $file_path, $read_time);
+$query = "INSERT INTO notes (note_text, student_id, file_path, read_time) VALUES ('$note_text', '$student_id', '$file_path', '$read_time')";
 
-if ($stmt->execute()) {
+if ($conn->query($query)) {
     $new_id = $conn->insert_id;
-    $get    = $conn->prepare(
-        "SELECT id, note_text, file_path, read_time, created_at, updated_at FROM notes WHERE id = ?"
-    );
-    $get->bind_param("i", $new_id);
-    $get->execute();
-    $note = $get->get_result()->fetch_assoc();
-    echo json_encode(['success' => true, 'message' => 'Note saved!', 'note' => $note]);
+
+    $result = $conn->query("SELECT id, note_text, file_path, read_time, created_at, updated_at FROM notes WHERE id = $new_id");
+
+    $note = $result->fetch_assoc();
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Note saved!',
+        'note' => $note
+    ]);
 } else {
-    echo json_encode(['success' => false, 'message' => 'DB error: ' . $conn->error]);
+    echo json_encode([
+        'success' => false,
+        'message' => 'DB error: ' . $conn->error
+    ]);
 }
 ?>
