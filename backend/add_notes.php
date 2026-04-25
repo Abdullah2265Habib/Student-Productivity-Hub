@@ -1,8 +1,4 @@
 <?php
-// Suppress PHP warnings/notices from polluting the JSON output
-ini_set('display_errors', 0);
-error_reporting(0);
-
 header('Content-Type: application/json');
 session_start();
 include 'db_config.php';
