@@ -159,7 +159,14 @@ function noteCard(note) {
         : `<button class="view-btn" onclick="expandNote(${note.id})">
               View <i class="fas fa-chevron-right"></i>
            </button>`;
-
+    const editAction = isPdf
+        ? `<button onclick="openEditPdfModal(${note.id})">
+               <i class="fas fa-file-pdf"></i> Replace PDF
+           </button>`
+        : `<button onclick="openEditModal(${note.id})">
+               <i class="fas fa-edit"></i> Edit
+           </button>`;
+ 
     return `
     <div class="note-card" data-id="${note.id}" data-type="${isPdf ? 'pdf' : 'text'}">
         <div class="note-card-header">
@@ -170,6 +177,7 @@ function noteCard(note) {
                     <i class="fas fa-ellipsis-v"></i>
                 </button>
                 <div class="dropdown-menu" id="menu-${note.id}">
+                    ${editAction}
                     <button class="del-btn" onclick="deleteNote(${note.id})">
                         <i class="fas fa-trash"></i> Delete
                     </button>
@@ -217,8 +225,7 @@ function toggleMenu(e, id) {
 }
 
 function closeAllMenus() {
-    document.querySelectorAll('.dropdown-menu.open')
-            .forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.dropdown-menu.open').forEach(m => m.classList.remove('open'));
 }
 
 /* ── Filters & Search ────────────────────────── */
@@ -299,7 +306,11 @@ function bindEvents() {
         if (e.target === modalOverlay) closeModal();
     });
     document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal();
+        if (e.key === 'Escape'){
+            if (modalOverlay.classList.contains('open')) closeModal();
+            if (editModalOverlay.classList.contains('open')) closeEditModalFn();
+            if (editPdfModalOverlay.classList.contains('open')) closeEditPdfModalFn();
+        }
     });
 
     /* ── Drop zone ── */
@@ -324,7 +335,39 @@ function bindEvents() {
 
     textForm.addEventListener('submit', submitTextNote);
     pdfForm.addEventListener('submit',  submitPdfNote);
+
+        /* ── Edit modal events ── */
+    closeEditModal.addEventListener('click', closeEditModalFn);
+    editCancelBtn.addEventListener('click',  closeEditModalFn);
+    editModalOverlay.addEventListener('click', e => {
+        if (e.target === editModalOverlay) closeEditModalFn();
+    });
+    editNoteForm.addEventListener('submit', submitEditNote);
+    /* ── Edit PDF modal events ── */
+    closeEditPdfModal.addEventListener('click', closeEditPdfModalFn);
+    editPdfCancelBtn.addEventListener('click',  closeEditPdfModalFn);
+    editPdfModalOverlay.addEventListener('click', e => {
+        if (e.target === editPdfModalOverlay) closeEditPdfModalFn();
+    });
+    editPdfForm.addEventListener('submit', submitEditPdf);
+ 
+    editPdfDropZone.addEventListener('dragover', e => {
+        e.preventDefault();
+        editPdfDropZone.classList.add('dragover');
+    });
+    editPdfDropZone.addEventListener('dragleave', () => editPdfDropZone.classList.remove('dragover'));
+    editPdfDropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        editPdfDropZone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) handleEditPdfFileSelect(file);
+    });
+    editPdfFileInput.addEventListener('change', () => {
+        if (editPdfFileInput.files[0]) handleEditPdfFileSelect(editPdfFileInput.files[0]);
+    });
+    editPdfRemoveFile.addEventListener('click', clearEditPdfFileChosen);
 }
+
 
 /* ── Modal helpers ───────────────────────────── */
 function openChooser() {
