@@ -2,12 +2,8 @@
 include 'db_config.php';
 include 'check_auth.php';
 
-
 $email   = $_SESSION['email'];
 $note_id = isset($_POST['note_id']) ? (int)$_POST['note_id'] : 0;
-
-
-
 
 $result = $conn->query("SELECT id FROM students WHERE email = '$email'");
 $row = $result->fetch_assoc();
