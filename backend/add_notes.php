@@ -29,6 +29,7 @@ $student_id = $row['id'];
 // ── Inputs ────────────────────────────────────────────────────────
 $note_text = isset($_POST['note_text']) ? trim($_POST['note_text']) : '';
 $file_path = null;
+$read_time = null;  // will be calculated below for text notes
 
 // ── Handle PDF upload ─────────────────────────────────────────────
 if (isset($_FILES['file'])) {
@@ -109,14 +110,20 @@ if (empty($note_text) && empty($file_path)) {
     exit;
 }
 
+// ── Calculate read_time for text notes (avg reading speed: 200 wpm) ──
+if (!empty($note_text)) {
+    $word_count = str_word_count($note_text);
+    $read_time  = max(1, (int) ceil($word_count / 200));
+}
+
 // ── Insert ────────────────────────────────────────────────────────
-$stmt = $conn->prepare("INSERT INTO notes (note_text, student_id, file_path) VALUES (?, ?, ?)");
-$stmt->bind_param("sis", $note_text, $student_id, $file_path);
+$stmt = $conn->prepare("INSERT INTO notes (note_text, student_id, file_path, read_time) VALUES (?, ?, ?, ?)");
+$stmt->bind_param("sisi", $note_text, $student_id, $file_path, $read_time);
 
 if ($stmt->execute()) {
     $new_id = $conn->insert_id;
     $get    = $conn->prepare(
-        "SELECT id, note_text, file_path, created_at, updated_at FROM notes WHERE id = ?"
+        "SELECT id, note_text, file_path, read_time, created_at, updated_at FROM notes WHERE id = ?"
     );
     $get->bind_param("i", $new_id);
     $get->execute();

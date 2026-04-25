@@ -112,8 +112,11 @@ function renderNotes(notes) {
 }
 
 function noteCard(note) {
-    const isPdf  = !!note.file_path;
-    const date   = formatDate(note.created_at);
+    const isPdf    = !!note.file_path;
+    const date     = formatDate(note.created_at);
+    const readBadge = (!isPdf && note.read_time)
+        ? `<span class="read-time-badge"><i class="fas fa-book-open"></i> ${note.read_time} min read</span>`
+        : '';
     const badge  = isPdf
         ? `<span class="note-type-badge pdf-type"><i class="fas fa-file-pdf"></i> PDF</span>`
         : `<span class="note-type-badge text-type"><i class="fas fa-align-left"></i> Text</span>`;
@@ -154,6 +157,7 @@ function noteCard(note) {
         <div class="note-card-body">${body}</div>
         <div class="note-card-footer">
             <span class="note-date"><i class="fas fa-clock"></i> ${date}</span>
+            ${readBadge}
             ${action}
         </div>
     </div>`;

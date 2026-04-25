@@ -9,6 +9,17 @@
     <link rel="stylesheet" href="../assets/css/notes.css">
 </head>
 <body>
+    <script>
+
+        fetch("/Student-Productivity-Hub/backend/check_auth.php")
+            .then(res=>res.text())
+            .then(res=>{
+                if(res=="unauthorized"){
+                    window.location = "pages/login.html";
+                }
+            });
+
+    </script>
 
 <!-- ── Navbar ─────────────────────────────────── -->
 <nav class="navbar">

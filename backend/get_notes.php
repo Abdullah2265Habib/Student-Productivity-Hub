@@ -21,7 +21,7 @@ if (!$student_id) {
 }
 
 $stmt = $conn->prepare(
-    "SELECT id, note_text, file_path, created_at, updated_at
+    "SELECT id, note_text, file_path, read_time, created_at, updated_at
      FROM notes
      WHERE student_id = ?
      ORDER BY updated_at DESC"
