@@ -1,19 +1,11 @@
 <?php
 include 'db_config.php';
-include 'auth_check.php';
-
+include 'check_auth.php';
 
 $email = $_SESSION['email'];
 
-$stu = $conn->prepare("SELECT id FROM students WHERE email = ? LIMIT 1");
-$stu->bind_param("s", $email);
-$stu->execute();
-$row = $stu->get_result()->fetch_assoc();
-
-if (!$row) {
-    echo json_encode(['success' => false, 'message' => 'Student record not found for: ' . $email]);
-    exit;
-}
+$result = $conn->query("SELECT id FROM students WHERE email = '$email'");
+$row = $result->fetch_assoc();
 $student_id = $row['id'];
 
 // ── Inputs ────────────────────────────────────────────────────────
