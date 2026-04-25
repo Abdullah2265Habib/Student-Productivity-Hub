@@ -415,20 +415,61 @@
                 padding: 1rem;
             }
         }
+        .skel-line {
+            background: #e2e8f0;
+            border-radius: 4px;
+            animation: pulse 1.4s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
     </style>
 </head>
 <body>
-    <script>
+<script>
+    fetch("/Student-Productivity-Hub/backend/dashboard_stats.php", { credentials: 'include' })
+        .then(res => res.text())
+        .then(text => {
+            let data;
+            try { data = JSON.parse(text); }
+            catch { 
+                document.getElementById('statsTotalNotes').textContent = '—';
+                document.getElementById('recentNotesList').innerHTML = '<li><p style="color:#64748b;padding:.5rem">Could not load notes.</p></li>';
+                return;
+            }
 
-        fetch("/Student-Productivity-Hub/backend/check_auth.php")
-            .then(res=>res.text())
-            .then(res=>{
-                if(res=="unauthorized"){
-                    window.location = "pages/login.html";
-                }
-            });
+            // Total Notes card
+            document.getElementById('statsTotalNotes').textContent = data.total_notes ?? '—';
 
-    </script>
+            // Recent Notes list
+            const list = document.getElementById('recentNotesList');
+            if (!data.recent_notes || data.recent_notes.length === 0) {
+                list.innerHTML = '<li><p style="color:#64748b;padding:.5rem">No notes yet. <a href="pages/notes.html">Create one →</a></p></li>';
+                return;
+            }
+            list.innerHTML = data.recent_notes.map(note => {
+                const isPdf  = !!note.file_path;
+                const label  = isPdf
+                    ? note.file_path.split('/').pop().replace(/^\d+_/, '')
+                    : (note.note_text || '').substring(0, 60) + ((note.note_text || '').length > 60 ? '…' : '');
+                const badge  = isPdf
+                    ? '<span class="item-badge urgent">PDF</span>'
+                    : `<span class="item-badge">${note.read_time ? note.read_time + ' min read' : 'Text'}</span>`;
+                const date   = note.updated_at
+                    ? new Date(note.updated_at.replace(' ', 'T'))
+                        .toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    : '';
+                return `<li>
+                    <div class="item-info">
+                        <h4>${label.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</h4>
+                        <p>Last updated: ${date}</p>
+                    </div>
+                    ${badge}
+                </li>`;
+            }).join('');
+        })
+        .catch(() => {
+            document.getElementById('statsTotalNotes').textContent = '—';
+        });
+</script>
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="container">
@@ -518,21 +559,21 @@
                             <i class="fas fa-check-circle"></i>
                         </div>
                         <div class="stat-card-title">Completed Tasks</div>
-                        <div class="stat-card-value">12</div>
+                        <div class="stat-card-value">--</div>
                     </div>
                     <div class="stat-card accent">
                         <div class="stat-card-icon">
                             <i class="fas fa-clock"></i>
                         </div>
                         <div class="stat-card-title">Study Hours</div>
-                        <div class="stat-card-value">48</div>
+                        <div class="stat-card-value">--</div>
                     </div>
                     <div class="stat-card danger">
                         <div class="stat-card-icon">
                             <i class="fas fa-exclamation-circle"></i>
                         </div>
                         <div class="stat-card-title">Pending Tasks</div>
-                        <div class="stat-card-value">8</div>
+                        <div class="stat-card-value">--</div>
                     </div>
                 </div>
 
