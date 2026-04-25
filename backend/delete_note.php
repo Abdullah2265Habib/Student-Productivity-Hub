@@ -11,10 +11,7 @@ if (!isset($_SESSION['email'])) {
 $email   = $_SESSION['email'];
 $note_id = isset($_POST['note_id']) ? (int)$_POST['note_id'] : 0;
 
-if (!$note_id) {
-    echo json_encode(['success' => false, 'message' => 'Invalid note ID']);
-    exit;
-}
+
 
 // Resolve student_id
 $stu = $conn->prepare("SELECT id FROM students WHERE email = ? LIMIT 1");
