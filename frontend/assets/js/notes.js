@@ -518,7 +518,158 @@ async function submitPdfNote(e) {
         setLoading(pdfSubmitBtn, false, '<i class="fas fa-upload"></i> Upload PDF');
     }
 }
-
+/* ══════════════════════════════════════════════
+   EDIT — TEXT NOTE
+   ══════════════════════════════════════════════ */
+function openEditModal(id) {
+    closeAllMenus();
+    const note = allNotes.find(n => n.id == id);
+    if (!note) return;
+ 
+    editNoteId.value    = id;
+    editNoteText.value  = note.note_text || '';
+    editModalOverlay.classList.add('open');
+    setTimeout(() => editNoteText.focus(), 100);
+}
+ 
+function closeEditModalFn() {
+    editModalOverlay.classList.remove('open');
+    setTimeout(() => {
+        editNoteForm.reset();
+        editNoteId.value = '';
+    }, 300);
+}
+ 
+async function submitEditNote(e) {
+    e.preventDefault();
+    const id   = editNoteId.value;
+    const text = editNoteText.value.trim();
+    if (!text) { showToast('Note text cannot be empty.', 'error'); return; }
+ 
+    setLoading(editSubmitBtn, true, 'Saving…');
+    const fd = new FormData();
+    fd.append('note_id',   id);
+    fd.append('note_text', text);
+ 
+    try {
+        const res = await fetch(`${API}/update_note.php`, {
+            method: 'POST',
+            body: fd,
+            credentials: 'include'
+        });
+        const raw = await res.text();
+        let data;
+        try { data = JSON.parse(raw); }
+        catch {
+            showToast('Server error: ' + raw.slice(0, 120), 'error');
+            return;
+        }
+ 
+        if (data.success) {
+            // Update local state
+            const idx = allNotes.findIndex(n => n.id == id);
+            if (idx !== -1) {
+                allNotes[idx].note_text = text;
+                // Recalculate read_time
+                const wordCount = text.split(/\s+/).filter(Boolean).length;
+                allNotes[idx].read_time = Math.max(1, Math.ceil(wordCount / 200));
+            }
+            applyFilters();
+            closeEditModalFn();
+            showToast('Note updated!', 'success');
+        } else {
+            showToast(data.message || 'Error updating note.', 'error');
+        }
+    } catch (err) {
+        showToast('Network error: ' + err.message, 'error');
+    } finally {
+        setLoading(editSubmitBtn, false, '<i class="fas fa-save"></i> Save Changes');
+    }
+}
+ 
+/* ══════════════════════════════════════════════
+   EDIT — PDF NOTE (replace PDF)
+   ══════════════════════════════════════════════ */
+function openEditPdfModal(id) {
+    closeAllMenus();
+    const note = allNotes.find(n => n.id == id);
+    if (!note) return;
+ 
+    editPdfNoteId.value = id;
+    clearEditPdfFileChosen();
+    editPdfModalOverlay.classList.add('open');
+}
+ 
+function closeEditPdfModalFn() {
+    editPdfModalOverlay.classList.remove('open');
+    setTimeout(() => {
+        editPdfForm.reset();
+        editPdfNoteId.value = '';
+        clearEditPdfFileChosen();
+    }, 300);
+}
+ 
+async function submitEditPdf(e) {
+    e.preventDefault();
+    const id   = editPdfNoteId.value;
+    const file = editDroppedFile || (editPdfFileInput.files && editPdfFileInput.files[0]);
+ 
+    if (!file) {
+        showToast('Please select a PDF file.', 'error');
+        return;
+    }
+ 
+    setLoading(editPdfSubmitBtn, true, 'Uploading…');
+ 
+    // Delete old note, then create a new one with the new PDF
+    // First delete the old note
+    try {
+        const delFd = new FormData();
+        delFd.append('note_id', id);
+        const delRes  = await fetch(`${API}/delete_note.php`, {
+            method: 'POST',
+            body: delFd,
+            credentials: 'include'
+        });
+        const delRaw  = await delRes.text();
+        let delData;
+        try { delData = JSON.parse(delRaw); }
+        catch { showToast('Error replacing PDF.', 'error'); return; }
+ 
+        if (!delData.success) {
+            showToast(delData.message || 'Could not replace PDF.', 'error');
+            return;
+        }
+ 
+        // Now upload the new PDF
+        const fd = new FormData();
+        fd.append('file', file);
+        const res = await fetch(`${API}/add_notes.php`, {
+            method: 'POST',
+            body: fd,
+            credentials: 'include'
+        });
+        const raw = await res.text();
+        let data;
+        try { data = JSON.parse(raw); }
+        catch { showToast('Server error: ' + raw.slice(0, 120), 'error'); return; }
+ 
+        if (data.success) {
+            // Remove old from state, add new at front
+            allNotes = allNotes.filter(n => n.id != id);
+            allNotes.unshift(data.note);
+            applyFilters();
+            closeEditPdfModalFn();
+            showToast('PDF replaced!', 'success');
+        } else {
+            showToast(data.message || 'Error uploading replacement PDF.', 'error');
+        }
+    } catch (err) {
+        showToast('Network error: ' + err.message, 'error');
+    } finally {
+        setLoading(editPdfSubmitBtn, false, '<i class="fas fa-upload"></i> Replace PDF');
+    }
+}
 /* ── Delete note ─────────────────────────────── */
 async function deleteNote(id) {
     if (!confirm('Delete this note? This cannot be undone.')) return;
