@@ -1,13 +1,7 @@
 <?php
-header('Content-Type: application/json');
-session_start();
 include 'db_config.php';
+include 'auth_check.php';
 
-// ── Auth ──────────────────────────────────────────────────────────
-if (!isset($_SESSION['email'])) {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized — please log in']);
-    exit;
-}
 
 $email = $_SESSION['email'];
 
