@@ -37,7 +37,9 @@ if (!empty($note_text)) {
     $word_count = str_word_count($note_text);
     $read_time  = max(1, (int) ceil($word_count / 200));
 }
-
+if (!empty($file_path)) {
+    $read_time = 15;
+}
 // ── Insert ────────────────────────────────────────────────────────
 // not works for PDFs, need to use prepared statements
 // $sql = "INSERT INTO notes (note_text, student_id, file_path, read_time) VALUES ('$note_text', '$student_id', '$file_path', '$read_time')";
