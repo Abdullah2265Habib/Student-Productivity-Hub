@@ -482,11 +482,6 @@ async function submitPdfNote(e) {
     // Prefer the drag-and-dropped file, fall back to the file input
     const file = droppedFile || (pdfFileInput.files && pdfFileInput.files[0]);
 
-    if (!file) {
-        showToast('Please select a PDF file.', 'error');
-        return;
-    }
-
     setLoading(pdfSubmitBtn, true, 'Uploading…');
     const fd = new FormData();
     fd.append('file', file);          // append the File object directly
