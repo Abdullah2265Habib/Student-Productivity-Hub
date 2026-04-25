@@ -40,6 +40,7 @@ if (!empty($note_text)) {
 if (!empty($file_path)) {
     $read_time = 15;
 }
+
 // ── Insert ────────────────────────────────────────────────────────
 // not works for PDFs, need to use prepared statements
 // $sql = "INSERT INTO notes (note_text, student_id, file_path, read_time) VALUES ('$note_text', '$student_id', '$file_path', '$read_time')";
