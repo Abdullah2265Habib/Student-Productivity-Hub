@@ -424,7 +424,17 @@
     </style>
 </head>
 <body>
+    <script>
+        fetch("/Student-Productivity-Hub/backend/check_auth.php")
+        .then(res=>res.text())
+        .then(res=>{
+            if(res=="unauthorized"){
+                window.location = "login.html";
+            }
+        });
+    </script>
 <script>
+
     fetch("/Student-Productivity-Hub/backend/dashboard_stats.php", { credentials: 'include' })
         .then(res => res.text())
         .then(text => {
@@ -442,7 +452,7 @@
             // Recent Notes list
             const list = document.getElementById('recentNotesList');
             if (!data.recent_notes || data.recent_notes.length === 0) {
-                list.innerHTML = '<li><p style="color:#64748b;padding:.5rem">No notes yet. <a href="pages/notes.html">Create one →</a></p></li>';
+                list.innerHTML = '<li><p style="color:#64748b;padding:.5rem">No notes yet. <a href="notes.html">Create one →</a></p></li>';
                 return;
             }
             list.innerHTML = data.recent_notes.map(note => {
@@ -497,7 +507,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="pages/notes.html">
+                        <a href="notes.html">
                             <i class="fas fa-sticky-note"></i>
                             <span>My Notes</span>
                         </a>
@@ -584,7 +594,7 @@
                         Quick Actions
                     </h3>
                     <div class="quick-actions">
-                        <button class="action-btn" onclick="window.location='pages/notes.html'">
+                        <button class="action-btn" onclick="window.location='notes.html'">
                             <i class="fas fa-plus"></i>
                             New Note
                         </button>
@@ -674,7 +684,7 @@
 
             fetch("/Student-Productivity-Hub/backend/logout.php")
             .then(()=>{
-            window.location = "index.html";
+            window.location = "../../index.html";
         });
 
 }

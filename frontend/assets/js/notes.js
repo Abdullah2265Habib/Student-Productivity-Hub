@@ -769,5 +769,5 @@ function showToast(msg, type = 'info') {
 /* ── Logout ──────────────────────────────────── */
 function logout() {
     fetch(`${API}/logout.php`, { credentials: 'include' })
-        .then(() => { window.location.href = '../index.html'; });
+        .then(() => { window.location.href = '../../index.html'; });
 }
