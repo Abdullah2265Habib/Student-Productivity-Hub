@@ -16,19 +16,19 @@ function signup() {
     form.append("email", document.getElementById("email").value);
     form.append("password", document.getElementById("password").value);
 
-    fetch("http://localhost/Student-Productivity-Hub/backend/signup.php",{
-        method:"POST",
-        body:form
+    fetch("../../backend/signup.php", {
+        method: "POST",
+        body: form
     })
-    .then(res=>res.text())
-    .then(msg=>{
+        .then(res => res.text())
+        .then(msg => {
 
-        if(msg=="success"){
-            window.location = "../index.html";
-        }else{
-            alert("Invalid Signup");
-        }
+            if (msg == "success") {
+                window.location = "../../index.html";
+            } else {
+                alert("Invalid Signup");
+            }
 
-    });
+        });
 
 }
