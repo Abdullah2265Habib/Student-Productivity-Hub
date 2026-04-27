@@ -32,7 +32,7 @@ function signup() {
     form.append("email", document.getElementById("email").value);
     form.append("password", document.getElementById("password").value);
 
-    fetch("http://localhost/Student-Productivity-Hub/backend/signup.php", {
+    fetch("../../backend/signup.php", {
         method: "POST",
         body: form
     })

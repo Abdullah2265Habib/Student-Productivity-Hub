@@ -152,7 +152,7 @@ function noteCard(note) {
 
     const action = isPdf
         ? `<a class="view-btn"
-              href="http://localhost/Student-Productivity-Hub/${escHtml(note.file_path)}"
+              href="../../..${escHtml(note.file_path)}"
               target="_blank">
               Open PDF <i class="fas fa-external-link-alt"></i>
            </a>`
