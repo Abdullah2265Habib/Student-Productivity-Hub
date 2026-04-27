@@ -382,6 +382,18 @@ body {
     align-items: center;
     gap: .35rem;
 }
+.read-time-badge {
+    font-size: .78rem;
+    color: var(--primary);
+    background: rgba(99, 102, 241, 0.1);
+    padding: .35rem .7rem;
+    border-radius: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-weight: 500;
+}
+.read-time-badge i { font-size: .8rem; }
 .view-btn {
     font-size: .82rem;
     color: var(--primary);

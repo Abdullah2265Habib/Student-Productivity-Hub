@@ -136,7 +136,7 @@ function renderNotes(notes) {
 function noteCard(note) {
     const isPdf    = !!note.file_path;
     const date     = formatDate(note.created_at);
-    const readBadge = (!isPdf && note.read_time)
+    const readBadge = (note.read_time)
         ? `<span class="read-time-badge"><i class="fas fa-book-open"></i> ${note.read_time} min read</span>`
         : '';
     const badge  = isPdf
@@ -482,8 +482,14 @@ async function submitPdfNote(e) {
     // Prefer the drag-and-dropped file, fall back to the file input
     const file = droppedFile || (pdfFileInput.files && pdfFileInput.files[0]);
 
+    if (!file) {
+        showToast('Please select a PDF file.', 'error');
+        return;
+    }
+
     setLoading(pdfSubmitBtn, true, 'Uploading…');
     const fd = new FormData();
+    fd.append('note_text', '');       // empty for PDF-only notes
     fd.append('file', file);          // append the File object directly
 
     try {
@@ -570,9 +576,8 @@ async function submitEditNote(e) {
             const idx = allNotes.findIndex(n => n.id == id);
             if (idx !== -1) {
                 allNotes[idx].note_text = text;
-                // Recalculate read_time
-                const wordCount = text.split(/\s+/).filter(Boolean).length;
-                allNotes[idx].read_time = Math.max(1, Math.ceil(wordCount / 200));
+                // Use read_time from backend response
+                allNotes[idx].read_time = data.read_time || 1;
             }
             applyFilters();
             closeEditModalFn();
@@ -643,6 +648,7 @@ async function submitEditPdf(e) {
  
         // Now upload the new PDF
         const fd = new FormData();
+        fd.append('note_text', '');   // empty for PDF-only notes
         fd.append('file', file);
         const res = await fetch(`${API}/add_notes.php`, {
             method: 'POST',

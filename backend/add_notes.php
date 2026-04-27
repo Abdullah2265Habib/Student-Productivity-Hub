@@ -10,13 +10,19 @@ $row = $result->fetch_assoc();
 $student_id = $row['id'];
 
 // ── Inputs ────────────────────────────────────────────────────────
-$note_text = $_POST['note_text'];
+$note_text = trim($_POST['note_text'] ?? '');
 $file_path = null;
-$read_time = null; 
+$read_time = 0;  // Initialize as integer
 
 // ── Handle PDF upload ─────────────────────────────────────────────
 if (isset($_FILES['file'])) {
     $err = $_FILES['file']['error'];
+
+    // Check for upload errors
+    if ($err !== UPLOAD_ERR_OK) {
+        echo json_encode(['success' => false, 'message' => 'File upload error: ' . $err]);
+        exit;
+    }
 
     // Create uploads directory if it doesn't exist
     $upload_dir = __DIR__ . '/uploads/';
@@ -28,17 +34,31 @@ if (isset($_FILES['file'])) {
     }
     $safe_name   = preg_replace('/[^a-zA-Z0-9._-]/', '_', basename($_FILES['file']['name']));
     $file_name   = time() . '_' . $safe_name;
+    $target_path = $upload_dir . $file_name;
+
+    // Move the uploaded file to the target directory
+    if (!move_uploaded_file($_FILES['file']['tmp_name'], $target_path)) {
+        echo json_encode(['success' => false, 'message' => 'Failed to save PDF file']);
+        exit;
+    }
 
     $file_path = 'backend/uploads/' . $file_name;
 }
 
-// ── Calculate read_time for text notes (avg reading speed: 200 wpm) ──
-if (!empty($note_text)) {
-    $word_count = str_word_count($note_text);
-    $read_time  = max(1, (int) ceil($word_count / 200));
-}
+// ── Calculate read_time (avg reading speed: 180 wpm for better granularity) ──
+// For text notes: Calculate based on word count
+// For PDF notes: Estimate as 15 minutes
 if (!empty($file_path)) {
+    // PDF note - set fixed read time
     $read_time = 15;
+} else if (!empty($note_text)) {
+    // Text-only note - calculate based on word count (180 wpm provides better granularity)
+    $word_count = str_word_count($note_text);
+    // Use 180 wpm for better granularity: ~1-180 words=1min, 181-360=2min, etc
+    $read_time = max(1, ceil($word_count / 180));
+} else {
+    // Fallback - no text and no file (shouldn't happen with validation)
+    $read_time = 0;
 }
 
 // ── Insert ────────────────────────────────────────────────────────

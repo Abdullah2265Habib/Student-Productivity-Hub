@@ -18,10 +18,20 @@ if (!$student_id) {
     exit;
 }
 
-// Update note
-$del = $conn->prepare("UPDATE notes SET note_text = ? WHERE id = ? AND student_id = ?");
-$del->bind_param("sii", $note_text, $note_id, $student_id);
-$del->execute();
+// Calculate read_time based on updated text (180 wpm)
+$read_time = 0;
+if (!empty($note_text)) {
+    $word_count = str_word_count($note_text);
+    // Use 180 wpm for better granularity: ~1-180 words=1min, 181-360=2min, etc
+    $read_time = max(1, ceil($word_count / 180));
+}
 
-echo json_encode(['success' => true, 'message' => 'Note updated']);
+// Update note with new text and recalculated read_time
+$stmt = $conn->prepare("UPDATE notes SET note_text = ?, read_time = ? WHERE id = ? AND student_id = ?");
+$stmt->bind_param("siii", $note_text, $read_time, $note_id, $student_id);
+if ($stmt->execute()) {
+    echo json_encode(['success' => true, 'message' => 'Note updated', 'read_time' => $read_time]);
+} else {
+    echo json_encode(['success' => false, 'message' => 'DB error: ' . $conn->error]);
+}
 ?>
