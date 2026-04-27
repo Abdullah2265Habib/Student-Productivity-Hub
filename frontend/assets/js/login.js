@@ -22,7 +22,7 @@ document.getElementById('login-form').addEventListener('submit', function (e) {
     form.append("email", document.getElementById("login-email").value);
     form.append("password", document.getElementById("login-pass").value);
 
-    fetch("../../backend/login.php", {
+    fetch("http://localhost/Student-Productivity-Hub/backend/login.php", {
         method: "POST",
         body: form
     })

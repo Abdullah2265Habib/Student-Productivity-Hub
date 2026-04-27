@@ -425,7 +425,7 @@
 </head>
 <body>
     <script>
-        fetch("/Student-Productivity-Hub/backend/check_auth.php")
+        fetch("../../backend/check_auth.php")
         .then(res=>res.text())
         .then(res=>{
             if(res=="unauthorized"){
@@ -435,7 +435,7 @@
     </script>
 <script>
 
-    fetch("/Student-Productivity-Hub/backend/dashboard_stats.php", { credentials: 'include' })
+    fetch("../../backend/dashboard_stats.php", { credentials: 'include' })
         .then(res => res.text())
         .then(text => {
             let data;
@@ -682,7 +682,7 @@
     <script>
         function logout(){
 
-            fetch("/Student-Productivity-Hub/backend/logout.php")
+            fetch("../../backend/logout.php")
             .then(()=>{
             window.location = "../../index.html";
         });
