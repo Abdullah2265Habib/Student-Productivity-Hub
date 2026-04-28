@@ -2,8 +2,7 @@
    notes.js  –  Student Productivity Hub
    ============================================ */
 
-// Root-relative — works on any port (8080, 8888, 80, etc.)
-const API = '/Student-Productivity-Hub/backend';
+const API = '../../backend';
 
 /* ── State ─────────────────────────────────── */
 let allNotes     = [];
@@ -152,7 +151,7 @@ function noteCard(note) {
 
     const action = isPdf
         ? `<a class="view-btn"
-              href="${API.replace('/backend', '')}/${note.file_path}"
+              href="../../${note.file_path}"
               target="_blank">
               Open PDF <i class="fas fa-external-link-alt"></i>
            </a>`
