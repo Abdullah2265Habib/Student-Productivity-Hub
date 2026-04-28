@@ -1,15 +1,15 @@
 <?php
 // get_assignments.php
 require_once 'db_config.php';
+require_once 'check_auth.php';
 
 header('Content-Type: application/json');
 
-if (!isset($_GET['student_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Missing student_id.']);
-    exit();
-}
+$email = $_SESSION['email'];
 
-$student_id = intval($_GET['student_id']);
+$studentResult = $conn->query("SELECT id FROM students WHERE email = '$email'");
+$studentRow = $studentResult->fetch_assoc();
+$student_id = $studentRow['id'];
 
 $sql = "SELECT * FROM assignments WHERE student_id = $student_id ORDER BY due_date ASC";
 $result = $conn->query($sql);
