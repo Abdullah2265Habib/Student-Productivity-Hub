@@ -475,10 +475,83 @@
                     ${badge}
                 </li>`;
             }).join('');
+
+            // Render Assignments
+            if (data.upcoming_assignments) {
+                renderAssignments(data.upcoming_assignments);
+            }
         })
         .catch(() => {
             document.getElementById('statsTotalNotes').textContent = '—';
         });
+
+    function renderAssignments(assignments) {
+        const container = document.getElementById('dashboardAssignments');
+        
+        if (!assignments || assignments.length === 0) {
+            container.innerHTML = '<li style="text-align: center; padding: 2rem; color: var(--text-light);">No upcoming assignments</li>';
+            return;
+        }
+
+        const statusBadgeMap = {
+            'submitted': 'completed',
+            'in_progress': '',
+            'pending': '',
+            'due_soon': 'urgent',
+            'missed': 'urgent',
+            'late': 'urgent'
+        };
+
+        container.innerHTML = assignments.map(assignment => {
+            const badgeClass = statusBadgeMap[assignment.status] || '';
+            const badgeText = assignment.badge || formatStatusBadge(assignment.status);
+            const dueDate = formatDueDate(assignment.due_date);
+            
+            return `
+                <li>
+                    <div class="item-info">
+                        <h4>${escapeHtml(assignment.course_name)}</h4>
+                        <p>Due: ${dueDate}</p>
+                    </div>
+                    <span class="item-badge ${badgeClass}">${badgeText}</span>
+                </li>
+            `;
+        }).join('');
+    }
+
+    function formatStatusBadge(status) {
+        const map = {
+            'pending': 'Pending',
+            'in_progress': 'In Progress',
+            'submitted': 'Submitted',
+            'due_soon': 'Due Soon',
+            'late': 'Late',
+            'missed': 'Missed'
+        };
+        return map[status] || status;
+    }
+
+    function formatDueDate(dateString) {
+        const date = new Date(dateString);
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        if (date.toDateString() === today.toDateString()) {
+            return 'Today';
+        } else if (date.toDateString() === tomorrow.toDateString()) {
+            return 'Tomorrow';
+        } else {
+            const options = { month: 'short', day: 'numeric', year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined };
+            return date.toLocaleDateString('en-US', options);
+        }
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
 </script>
     <!-- Navigation Bar -->
     <nav class="navbar">
@@ -513,7 +586,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="assignments.html">
                             <i class="fas fa-tasks"></i>
                             <span>Assignments</span>
                         </a>
@@ -647,31 +720,16 @@
 
                 <!-- Upcoming Assignments -->
                 <div class="content-section">
-                    <h3 class="section-title">
-                        <i class="fas fa-calendar-alt"></i>
-                        Upcoming Assignments
-                    </h3>
-                    <ul class="item-list">
-                        <li>
-                            <div class="item-info">
-                                <h4>Mathematics Assignment - Problem Set 5</h4>
-                                <p>Due: Tomorrow at 11:59 PM</p>
-                            </div>
-                            <span class="item-badge urgent">Due Soon</span>
-                        </li>
-                        <li>
-                            <div class="item-info">
-                                <h4>Physics Lab Report</h4>
-                                <p>Due: 3 days ago</p>
-                            </div>
-                            <span class="item-badge completed">Submitted</span>
-                        </li>
-                        <li>
-                            <div class="item-info">
-                                <h4>Chemistry Experiment Documentation</h4>
-                                <p>Due: In 5 days</p>
-                            </div>
-                            <span class="item-badge">In Progress</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3 class="section-title" style="margin-bottom: 0;">
+                            <i class="fas fa-calendar-alt"></i>
+                            Upcoming Assignments
+                        </h3>
+                        <a href="assignments.html" style="color: var(--primary-color); text-decoration: none; font-size: 0.9rem; font-weight: 600;">View All →</a>
+                    </div>
+                    <ul class="item-list" id="dashboardAssignments">
+                        <li style="text-align: center; padding: 2rem; color: var(--text-light);">
+                            <i class="fas fa-spinner fa-spin"></i> Loading assignments...
                         </li>
                     </ul>
                 </div>
@@ -680,8 +738,89 @@
     </div>
 
     <script>
-        function logout(){
+        // Load dashboard data on page load
+        document.addEventListener('DOMContentLoaded', loadDashboardData);
 
+        function loadDashboardData() {
+            fetch('../../backend/dashboard_stats.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.upcoming_assignments) {
+                        renderAssignments(data.upcoming_assignments);
+                    }
+                })
+                .catch(error => console.error('Error loading dashboard data:', error));
+        }
+
+        function renderAssignments(assignments) {
+            const container = document.getElementById('dashboardAssignments');
+            
+            if (!assignments || assignments.length === 0) {
+                container.innerHTML = '<li style="text-align: center; padding: 2rem; color: var(--text-light);">No upcoming assignments</li>';
+                return;
+            }
+
+            const statusBadgeMap = {
+                'submitted': 'completed',
+                'in_progress': '',
+                'pending': '',
+                'due_soon': 'urgent',
+                'missed': 'urgent',
+                'late': 'urgent'
+            };
+
+            container.innerHTML = assignments.map(assignment => {
+                const badgeClass = statusBadgeMap[assignment.status] || '';
+                const badgeText = assignment.badge || formatStatusBadge(assignment.status);
+                const dueDate = formatDueDate(assignment.due_date);
+                
+                return `
+                    <li>
+                        <div class="item-info">
+                            <h4>${escapeHtml(assignment.course_name)}</h4>
+                            <p>Due: ${dueDate}</p>
+                        </div>
+                        <span class="item-badge ${badgeClass}">${badgeText}</span>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        function formatStatusBadge(status) {
+            const map = {
+                'pending': 'Pending',
+                'in_progress': 'In Progress',
+                'submitted': 'Submitted',
+                'due_soon': 'Due Soon',
+                'late': 'Late',
+                'missed': 'Missed'
+            };
+            return map[status] || status;
+        }
+
+        function formatDueDate(dateString) {
+            const date = new Date(dateString);
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            if (date.toDateString() === today.toDateString()) {
+                return 'Today';
+            } else if (date.toDateString() === tomorrow.toDateString()) {
+                return 'Tomorrow';
+            } else {
+                const options = { month: 'short', day: 'numeric', year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined };
+                return date.toLocaleDateString('en-US', options);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function logout(){
             fetch("../../backend/logout.php")
             .then(()=>{
             window.location = "../../index.html";
