@@ -1,15 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings — StudyHub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/app-shell.css">
+    <link rel="stylesheet" href="../assets/css/settings.css">
 </head>
-
 <body>
+    <script>
+        fetch("../../backend/check_auth.php")
+            .then(res => res.text())
+            .then(res => {
+                if (res.trim() === "unauthorized") {
+                    window.location = "login.html?redirect=settings.html";
+                }
+            });
+    </script>
+
     <div class="app" id="app">
         <aside class="app-sidebar">
             <div class="brand">
@@ -32,39 +41,142 @@
             <div class="nav-section-label">Account</div>
             <ul class="nav">
                 <li><a href="settings.html" class="active"><i class="fas fa-cog"></i><span>Settings</span></a></li>
-                <li><a href="#" onclick="logout(); return false;"><i
-                            class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+                <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="user-chip">
-                    <div class="user-avatar">S</div>
-                    <div class="user-meta"><strong>Student</strong><span>Welcome back</span></div>
+                    <div class="user-avatar" id="sidebarAvatar">S</div>
+                    <div class="user-meta">
+                        <strong id="sidebarName">Student</strong>
+                        <span>Welcome back</span>
+                    </div>
                 </div>
             </div>
         </aside>
+
         <div class="app-main">
             <header class="topbar">
                 <div style="display:flex;align-items:center;gap:.75rem;">
-                    <button class="menu-btn icon-btn"
-                        onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i
-                            class="fas fa-bars"></i></button>
+                    <button class="menu-btn icon-btn" onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i class="fas fa-bars"></i></button>
                     <div class="topbar-title">
                         <h1>Settings</h1>
-                        <p>Manage your account preferences</p>
+                        <p>Manage your account preferences and personal information</p>
                     </div>
                 </div>
             </header>
+
             <main class="page">
-                <section class="card card-pad">
-                    <h3 class="section-title"><i class="fas fa-cog"></i> Coming soon</h3>
-                    <p style="color:var(--text-2)">Account settings will appear here.</p>
-                </section>
+                <div class="settings-layout">
+                    <!-- Sidebar Navigation for Settings -->
+                    <div class="settings-nav">
+                        <button class="settings-tab active" data-target="profile-section">
+                            <i class="fas fa-user"></i> Personal Info
+                        </button>
+                        <button class="settings-tab" data-target="security-section">
+                            <i class="fas fa-shield-alt"></i> Security
+                        </button>
+                    </div>
+
+                    <!-- Settings Content -->
+                    <div class="settings-content">
+                        
+                        <!-- Personal Info Section -->
+                        <section class="settings-section active" id="profile-section">
+                            <div class="card card-pad">
+                                <h3 class="section-title"><i class="fas fa-id-card"></i> Personal Information</h3>
+                                <p class="section-desc">Update your profile details and contact information.</p>
+                                
+                                <div class="profile-header">
+                                    <div class="profile-avatar" id="mainAvatar">S</div>
+                                    <div class="profile-info">
+                                        <h2 id="mainName">Student Name</h2>
+                                        <p id="mainEmail">student@example.com</p>
+                                        <span class="member-since" id="memberSince">Member since 2026</span>
+                                    </div>
+                                </div>
+
+                                <form id="profileForm" class="settings-form">
+                                    <div class="form-group">
+                                        <label for="updateName">Full Name</label>
+                                        <div class="input-with-icon">
+                                            <i class="fas fa-user"></i>
+                                            <input type="text" id="updateName" name="name" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="updateEmail">Email Address</label>
+                                        <div class="input-with-icon">
+                                            <i class="fas fa-envelope"></i>
+                                            <input type="email" id="updateEmail" name="email" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary" id="saveProfileBtn">
+                                            <i class="fas fa-save"></i> Save Changes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </section>
+
+                        <!-- Security Section -->
+                        <section class="settings-section" id="security-section">
+                            <div class="card card-pad">
+                                <h3 class="section-title"><i class="fas fa-lock"></i> Change Password</h3>
+                                <p class="section-desc">Ensure your account is using a long, random password to stay secure.</p>
+                                
+                                <form id="passwordForm" class="settings-form">
+                                    <div class="form-group">
+                                        <label for="currentPassword">Current Password</label>
+                                        <div class="input-with-icon">
+                                            <i class="fas fa-key"></i>
+                                            <input type="password" id="currentPassword" name="current_password" required>
+                                            <button type="button" class="toggle-password"><i class="fas fa-eye"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="form-divider"></div>
+                                    <div class="form-group">
+                                        <label for="newPassword">New Password</label>
+                                        <div class="input-with-icon">
+                                            <i class="fas fa-lock"></i>
+                                            <input type="password" id="newPassword" name="new_password" required minlength="6">
+                                            <button type="button" class="toggle-password"><i class="fas fa-eye"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="confirmPassword">Confirm New Password</label>
+                                        <div class="input-with-icon">
+                                            <i class="fas fa-check-circle"></i>
+                                            <input type="password" id="confirmPassword" name="confirm_password" required minlength="6">
+                                            <button type="button" class="toggle-password"><i class="fas fa-eye"></i></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="password-requirements">
+                                        <h4>Password Requirements:</h4>
+                                        <ul>
+                                            <li id="req-length"><i class="fas fa-circle"></i> Minimum 6 characters</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary" id="savePasswordBtn">
+                                            <i class="fas fa-key"></i> Update Password
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </section>
+
+                    </div>
+                </div>
             </main>
         </div>
     </div>
-    <script>
-        function logout() { fetch("../../backend/logout.php").then(() => window.location = "../../index.html"); }
-    </script>
-</body>
 
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../assets/js/settings.js"></script>
+</body>
 </html>
