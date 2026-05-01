@@ -7,6 +7,7 @@
     <title>Dashboard - Student Productivity Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/app-shell.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* =========================================
            Dashboard-only styles
@@ -424,6 +425,12 @@
             background: var(--primary);
         }
 
+        .dashboard-chart-wrap {
+            position: relative;
+            height: 220px;
+            width: 100%;
+        }
+
         @media (max-width: 600px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -720,6 +727,17 @@
 
                     <!-- ── Right column ──────────── -->
                     <div class="side-stack">
+                        <!-- Activity Chart -->
+                        <section class="card card-pad">
+                            <div class="section-head">
+                                <h3 class="section-title"><i class="fas fa-chart-bar"></i> Recent Study Activity</h3>
+                                <a href="analytics.html" class="view-all">Full Analytics →</a>
+                            </div>
+                            <div class="dashboard-chart-wrap">
+                                <canvas id="dashStudyChart"></canvas>
+                            </div>
+                        </section>
+
                         <!-- Goals Calendar -->
                         <section class="card card-pad">
                             <h3 class="section-title"><i class="fas fa-calendar"></i> Goals Calendar</h3>
@@ -846,6 +864,54 @@
         document.getElementById('nextMonth').addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1); renderCalendar(); });
         document.getElementById('todayBtn').addEventListener('click', () => { currentCalendarDate = new Date(); renderCalendar(); });
         document.addEventListener('DOMContentLoaded', loadGoalsForCalendar);
+
+        /* ─── Dashboard Chart ─── */
+        fetch("../../backend/analytics_stats.php", { credentials: 'include' })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success && data.study && data.study.per_day) {
+                    const ctx = document.getElementById('dashStudyChart');
+                    if(!ctx) return;
+                    
+                    const days = [];
+                    for (let i = 6; i >= 0; i--) {
+                        const d = new Date(); d.setDate(d.getDate() - i);
+                        days.push(d.toISOString().slice(0, 10));
+                    }
+                    
+                    const dataMap = {};
+                    data.study.per_day.forEach(d => { dataMap[d.day] = Math.round(d.seconds / 60); });
+                    const values = days.map(d => dataMap[d] || 0);
+                    
+                    const formatDay = (dateStr) => {
+                        const d = new Date(dateStr + 'T00:00:00');
+                        return d.toLocaleDateString('en-US', { weekday: 'short' });
+                    };
+
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: days.map(d => formatDay(d)),
+                            datasets: [{
+                                label: 'Minutes Studied',
+                                data: values,
+                                backgroundColor: '#3b82f6',
+                                borderRadius: 6
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { callback: v => v + 'm' } },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
+                }
+            })
+            .catch(() => {});
 
         function logout() {
             fetch("../../backend/logout.php").then(() => { window.location = "../../index.html"; });

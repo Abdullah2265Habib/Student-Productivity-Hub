@@ -57,7 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
             renderHeatmap(data.study.per_day);
             renderNotesTypeChart(data.notes);
         })
-        .catch(() => showError());
+        .catch(err => {
+            console.error("Analytics rendering error:", err);
+            showError();
+        });
 });
 
 function showError() {
@@ -76,7 +79,9 @@ function renderKPIs(data) {
     document.getElementById('kpiGoals').textContent = data.goals.total;
     document.getElementById('kpiStudyTime').textContent = fmt(data.study.total_seconds);
     document.getElementById('kpiSessions').textContent = data.study.total_sessions;
-    document.getElementById('kpiScore').textContent = data.productivity_score + '%';
+    
+    const kpiScore = document.getElementById('kpiScore');
+    if (kpiScore) kpiScore.textContent = data.productivity_score + '%';
 
     // Trend badges
     const completed = data.goals.by_status?.completed || 0;

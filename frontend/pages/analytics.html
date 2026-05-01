@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - Student Productivity Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/app-shell.css">
+    <link rel="stylesheet" href="../assets/css/analytics.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="app" id="app">
+        <!-- ── Sidebar ─────────────────────────── -->
+        <aside class="app-sidebar">
+            <div class="brand">
+                <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
+                <div class="brand-name">StudyHub</div>
+            </div>
+            <div class="nav-section-label">Main</div>
+            <ul class="nav">
+                <li><a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                <li><a href="notes.html"><i class="fas fa-sticky-note"></i><span>My Notes</span></a></li>
+                <li><a href="assignments.html"><i class="fas fa-tasks"></i><span>Assignments</span></a></li>
+                <li><a href="timer.html"><i class="fas fa-hourglass-half"></i><span>Pomodoro Timer</span></a></li>
+            </ul>
+            <div class="nav-section-label">Insights</div>
+            <ul class="nav">
+                <li><a href="goals.html"><i class="fas fa-bullseye"></i><span>Goals</span></a></li>
+                <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a></li>
+                <li><a href="analytics.html" class="active"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
+            </ul>
+            <div class="nav-section-label">Account</div>
+            <ul class="nav">
+                <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+                <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-chip">
+                    <div class="user-avatar" id="userAvatar">S</div>
+                    <div class="user-meta">
+                        <strong id="userName">Student</strong>
+                        <span id="userRole">Welcome back</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ── Main column ─────────────────────── -->
+        <div class="app-main">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:.75rem;">
+                    <button class="menu-btn icon-btn"
+                        onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i
+                            class="fas fa-bars"></i></button>
+                    <div class="topbar-title">
+                        <h1>Analytics Overview</h1>
+                        <p>Deep dive into your productivity metrics and study habits</p>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <a href="dashboard.html" class="btn btn-ghost"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+                </div>
+            </header>
+
+            <main class="page">
+                <!-- ── Header & Period ─────────────────── -->
+                <div class="analytics-header">
+                    <div class="header-left">
+                        <h2>Performance Insights</h2>
+                        <p>Track your progress across all your academic activities</p>
+                    </div>
+                </div>
+
+                <!-- ── Streak Banner ───────────────────── -->
+                <div class="streak-banner">
+                    <div class="streak-icon">🔥</div>
+                    <div class="streak-info">
+                        <strong>Current Study Streak</strong>
+                        <span id="streakMsg">Loading streak...</span>
+                    </div>
+                    <div class="streak-days">
+                        <span id="streakDays">-</span> <small>Days</small>
+                    </div>
+                </div>
+
+                <!-- ── KPI Cards ───────────────────────── -->
+                <div class="kpi-grid">
+                    <div class="kpi-card violet">
+                        <div class="kpi-icon"><i class="fas fa-sticky-note"></i></div>
+                        <div class="kpi-meta">
+                            <div class="kpi-value" id="kpiNotes">-</div>
+                            <div class="kpi-label">Total Notes</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card blue">
+                        <div class="kpi-icon"><i class="fas fa-tasks"></i></div>
+                        <div class="kpi-meta">
+                            <div class="kpi-value" id="kpiAssignments">-</div>
+                            <div class="kpi-label">Assignments</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card green">
+                        <div class="kpi-icon"><i class="fas fa-bullseye"></i></div>
+                        <div class="kpi-meta">
+                            <div class="kpi-value" id="kpiGoals">-</div>
+                            <div class="kpi-label">Goals Set</div>
+                            <div class="kpi-trend neutral" id="kpiGoalsTrend">-</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card orange">
+                        <div class="kpi-icon"><i class="fas fa-clock"></i></div>
+                        <div class="kpi-meta">
+                            <div class="kpi-value" id="kpiStudyTime">-</div>
+                            <div class="kpi-label">Time Studied</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card cyan">
+                        <div class="kpi-icon"><i class="fas fa-layer-group"></i></div>
+                        <div class="kpi-meta">
+                            <div class="kpi-value" id="kpiSessions">-</div>
+                            <div class="kpi-label">Study Sessions</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Primary Charts Grid ─────────────── -->
+                <div class="charts-grid">
+                    <!-- Productivity Score -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-header-left">
+                                <h3 class="chart-title"><i class="fas fa-tachometer-alt"></i> Productivity Score</h3>
+                                <p class="chart-subtitle">Based on your recent activity and goals</p>
+                            </div>
+                        </div>
+                        <div class="score-section">
+                            <div class="score-ring-wrapper">
+                                <canvas id="scoreRingCanvas"></canvas>
+                                <div class="score-ring-center">
+                                    <div class="score-num" id="scoreNum">-</div>
+                                    <div class="score-label-sub">Score</div>
+                                </div>
+                            </div>
+                            <div class="score-details">
+                                <div class="score-breakdown-item">
+                                    <div class="sbi-icon green"><i class="fas fa-bullseye"></i></div>
+                                    <div class="sbi-text">
+                                        <strong>Goal Completion</strong>
+                                        <span id="barGoalsLabel">Loading...</span>
+                                        <div class="sbi-progress-bar"><div class="bar-fill green" id="barGoals" style="width:0%"></div></div>
+                                    </div>
+                                </div>
+                                <div class="score-breakdown-item">
+                                    <div class="sbi-icon blue"><i class="fas fa-tasks"></i></div>
+                                    <div class="sbi-text">
+                                        <strong>Task Submission</strong>
+                                        <span id="barAssignLabel">Loading...</span>
+                                        <div class="sbi-progress-bar"><div class="bar-fill blue" id="barAssign" style="width:0%"></div></div>
+                                    </div>
+                                </div>
+                                <div class="score-breakdown-item">
+                                    <div class="sbi-icon orange"><i class="fas fa-clock"></i></div>
+                                    <div class="sbi-text">
+                                        <strong>Study Consistency</strong>
+                                        <span id="barStudyLabel">Loading...</span>
+                                        <div class="sbi-progress-bar"><div class="bar-fill orange" id="barStudy" style="width:0%"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily Study Time -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-header-left">
+                                <h3 class="chart-title"><i class="fas fa-chart-bar"></i> Daily Study Time</h3>
+                                <p class="chart-subtitle">Last 7 days of focus sessions</p>
+                            </div>
+                            <span class="chart-badge">Past Week</span>
+                        </div>
+                        <div class="chart-canvas-wrap" style="height: 230px;">
+                            <div class="chart-skeleton"></div>
+                            <canvas id="studyDailyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Secondary Charts Grid ───────────── -->
+                <div class="charts-grid-3">
+                    <!-- Assignments Status -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-header-left">
+                                <h3 class="chart-title"><i class="fas fa-chart-pie"></i> Assignments</h3>
+                                <p class="chart-subtitle">Status distribution</p>
+                            </div>
+                        </div>
+                        <div class="chart-canvas-wrap" style="height: 200px;">
+                            <div class="chart-skeleton"></div>
+                            <canvas id="assignStatusChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Goals Status -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-header-left">
+                                <h3 class="chart-title"><i class="fas fa-bullseye"></i> Goals Tracker</h3>
+                                <p class="chart-subtitle">Current status breakdown</p>
+                            </div>
+                        </div>
+                        <div class="chart-canvas-wrap" style="height: 200px;">
+                            <div class="chart-skeleton"></div>
+                            <canvas id="goalsStatusChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Notes Breakdown -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-header-left">
+                                <h3 class="chart-title"><i class="fas fa-file-alt"></i> Notes Types</h3>
+                                <p class="chart-subtitle">Text vs PDF materials</p>
+                            </div>
+                        </div>
+                        <div class="chart-canvas-wrap" style="height: 200px;">
+                            <div class="chart-skeleton"></div>
+                            <canvas id="notesTypeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Full Width Charts ───────────────── -->
+                <div class="charts-grid">
+                    <!-- Weekly Study Trend -->
+                    <div class="chart-card chart-full">
+                        <div class="chart-header">
+                            <div class="chart-header-left">
+                                <h3 class="chart-title"><i class="fas fa-chart-line"></i> Study Trends</h3>
+                                <p class="chart-subtitle">Hours & sessions over the last 4 weeks</p>
+                            </div>
+                            <span class="chart-badge">Past Month</span>
+                        </div>
+                        <div class="chart-canvas-wrap" style="height: 280px;">
+                            <div class="chart-skeleton"></div>
+                            <canvas id="weeklyStudyChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Notes Created Over Time -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-header-left">
+                                <h3 class="chart-title"><i class="fas fa-chart-area"></i> Notes Activity</h3>
+                                <p class="chart-subtitle">New notes added per month</p>
+                            </div>
+                        </div>
+                        <div class="chart-canvas-wrap" style="height: 220px;">
+                            <div class="chart-skeleton"></div>
+                            <canvas id="notesMonthChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Goals Priority & Heatmap -->
+                    <div class="col-stack">
+                        <div class="chart-card" style="margin-bottom: 1.25rem;">
+                            <div class="chart-header">
+                                <div class="chart-header-left">
+                                    <h3 class="chart-title"><i class="fas fa-list-ol"></i> Goals by Priority</h3>
+                                </div>
+                            </div>
+                            <div class="chart-canvas-wrap" style="height: 120px;">
+                                <div class="chart-skeleton"></div>
+                                <canvas id="goalsPriorityChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div class="chart-header-left">
+                                    <h3 class="chart-title"><i class="fas fa-calendar-check"></i> 28-Day Activity</h3>
+                                </div>
+                            </div>
+                            <div class="heatmap-wrap">
+                                <div class="heatmap-day-labels">
+                                    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                                </div>
+                                <div class="heatmap-grid" id="heatmapGrid">
+                                    <!-- Populated by JS -->
+                                </div>
+                                <div class="heatmap-legend">
+                                    Less <div class="heatmap-cell level-0"></div><div class="heatmap-cell level-1"></div><div class="heatmap-cell level-2"></div><div class="heatmap-cell level-3"></div><div class="heatmap-cell level-4"></div> More
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="../assets/js/analytics.js"></script>
+</body>
+</html>
