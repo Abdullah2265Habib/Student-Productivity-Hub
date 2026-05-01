@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,143 +9,173 @@
     <link rel="stylesheet" href="../assets/css/app-shell.css">
     <link rel="stylesheet" href="../assets/css/calendar.css">
 </head>
+
 <body>
 
-<div class="app" id="app">
-    <aside class="app-sidebar">
-        <div class="brand">
-            <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
-            <div class="brand-name">StudyHub</div>
-        </div>
-        <div class="nav-section-label">Main</div>
-        <ul class="nav">
-            <li><a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
-            <li><a href="notes.html"><i class="fas fa-sticky-note"></i><span>My Notes</span></a></li>
-            <li><a href="assignments.html"><i class="fas fa-tasks"></i><span>Assignments</span></a></li>
-            <li><a href="timer.html"><i class="fas fa-hourglass-half"></i><span>Pomodoro Timer</span></a></li>
-        </ul>
-        <div class="nav-section-label">Insights</div>
-        <ul class="nav">
-            <li><a href="goals.html"><i class="fas fa-bullseye"></i><span>Goals</span></a></li>
-            <li><a href="calendar.html" class="active"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a></li>
-        </ul>
-        <div class="nav-section-label">Account</div>
-        <ul class="nav">
-            <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
-            <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
-        </ul>
-        <div class="sidebar-footer">
-            <div class="user-chip">
-                <div class="user-avatar">S</div>
-                <div class="user-meta"><strong>Student</strong><span>Welcome back</span></div>
+    <div class="app" id="app">
+        <aside class="app-sidebar">
+            <div class="brand">
+                <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
+                <div class="brand-name">StudyHub</div>
             </div>
-        </div>
-    </aside>
-
-    <div class="app-main">
-        <header class="topbar">
-            <div style="display:flex;align-items:center;gap:.75rem;">
-                <button class="menu-btn icon-btn" onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i class="fas fa-bars"></i></button>
-                <div class="topbar-title">
-                    <h1>Goals Calendar</h1>
-                    <p>View deadlines, holidays and goals at a glance</p>
+            <div class="nav-section-label">Main</div>
+            <ul class="nav">
+                <li><a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                <li><a href="notes.html"><i class="fas fa-sticky-note"></i><span>My Notes</span></a></li>
+                <li><a href="assignments.html"><i class="fas fa-tasks"></i><span>Assignments</span></a></li>
+                <li><a href="timer.html"><i class="fas fa-hourglass-half"></i><span>Pomodoro Timer</span></a></li>
+            </ul>
+            <div class="nav-section-label">Insights</div>
+            <ul class="nav">
+                <li><a href="goals.html"><i class="fas fa-bullseye"></i><span>Goals</span></a></li>
+                <li><a href="calendar.html" class="active"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a>
+                </li>
+                <li><a href="analytics.html"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
+            </ul>
+            <div class="nav-section-label">Account</div>
+            <ul class="nav">
+                <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+                <li><a href="#" onclick="logout(); return false;"><i
+                            class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-chip">
+                    <div class="user-avatar">S</div>
+                    <div class="user-meta"><strong>Student</strong><span>Welcome back</span></div>
                 </div>
             </div>
-        </header>
+        </aside>
 
-<div class="page">
+        <div class="app-main">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:.75rem;">
+                    <button class="menu-btn icon-btn"
+                        onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i
+                            class="fas fa-bars"></i></button>
+                    <div class="topbar-title">
+                        <h1>Goals Calendar</h1>
+                        <p>View deadlines, holidays and goals at a glance</p>
+                    </div>
+                </div>
+            </header>
 
-    <!-- Calendar -->
-    <div class="card">
-        <div class="card-head">
-            <h3><i class="fas fa-calendar-days"></i> Goals Calendar</h3>
-            <div class="cal-nav">
-                <button class="cal-nav-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
-                <div class="month-label" id="monthLabel">—</div>
-                <button class="cal-nav-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
-                <button class="today-btn" id="todayBtn">Today</button>
-            </div>
-        </div>
-        <div class="cal-body">
-            <div class="weekdays">
-                <div class="weekday">Sun</div><div class="weekday">Mon</div><div class="weekday">Tue</div>
-                <div class="weekday">Wed</div><div class="weekday">Thu</div><div class="weekday">Fri</div>
-                <div class="weekday">Sat</div>
-            </div>
-            <div class="cal-grid" id="calGrid"></div>
-        </div>
-        <div class="legend">
-            <div class="legend-item"><div class="leg-box" style="border-color:var(--accent);background:rgba(245,158,11,.1)"></div> Goal</div>
-            <div class="legend-item"><div class="leg-box" style="border-color:var(--holiday);background:rgba(236,72,153,.1)"></div> Holiday</div>
-            <div class="legend-item"><div class="leg-box" style="border-color:var(--primary);background:rgba(99,102,241,.15)"></div> Today</div>
-            <div class="legend-item"><div class="leg-dot" style="background:var(--danger)"></div> High</div>
-            <div class="legend-item"><div class="leg-dot" style="background:var(--accent)"></div> Medium</div>
-            <div class="legend-item"><div class="leg-dot" style="background:var(--success)"></div> Low</div>
-        </div>
-    </div>
+            <div class="page">
 
-    <!-- Sidebar -->
-    <div class="sidebar-panel">
-        <div class="card">
-            <div class="card-head">
-                <h3><i class="fas fa-calendar-check"></i> <span id="detailTitle">Select a date</span></h3>
-            </div>
-            <div class="panel-body" id="detailBody">
-                <div class="empty-panel">
-                    <i class="fas fa-hand-pointer"></i>
-                    <p style="font-size:.8rem">Click any date to see goals &amp; holidays</p>
+                <!-- Calendar -->
+                <div class="card">
+                    <div class="card-head">
+                        <h3><i class="fas fa-calendar-days"></i> Goals Calendar</h3>
+                        <div class="cal-nav">
+                            <button class="cal-nav-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                            <div class="month-label" id="monthLabel">—</div>
+                            <button class="cal-nav-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+                            <button class="today-btn" id="todayBtn">Today</button>
+                        </div>
+                    </div>
+                    <div class="cal-body">
+                        <div class="weekdays">
+                            <div class="weekday">Sun</div>
+                            <div class="weekday">Mon</div>
+                            <div class="weekday">Tue</div>
+                            <div class="weekday">Wed</div>
+                            <div class="weekday">Thu</div>
+                            <div class="weekday">Fri</div>
+                            <div class="weekday">Sat</div>
+                        </div>
+                        <div class="cal-grid" id="calGrid"></div>
+                    </div>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="leg-box" style="border-color:var(--accent);background:rgba(245,158,11,.1)">
+                            </div> Goal
+                        </div>
+                        <div class="legend-item">
+                            <div class="leg-box" style="border-color:var(--holiday);background:rgba(236,72,153,.1)">
+                            </div> Holiday
+                        </div>
+                        <div class="legend-item">
+                            <div class="leg-box" style="border-color:var(--primary);background:rgba(99,102,241,.15)">
+                            </div> Today
+                        </div>
+                        <div class="legend-item">
+                            <div class="leg-dot" style="background:var(--danger)"></div> High
+                        </div>
+                        <div class="legend-item">
+                            <div class="leg-dot" style="background:var(--accent)"></div> Medium
+                        </div>
+                        <div class="legend-item">
+                            <div class="leg-dot" style="background:var(--success)"></div> Low
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar-panel">
+                    <div class="card">
+                        <div class="card-head">
+                            <h3><i class="fas fa-calendar-check"></i> <span id="detailTitle">Select a date</span></h3>
+                        </div>
+                        <div class="panel-body" id="detailBody">
+                            <div class="empty-panel">
+                                <i class="fas fa-hand-pointer"></i>
+                                <p style="font-size:.8rem">Click any date to see goals &amp; holidays</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-head">
+                            <h3><i class="fas fa-umbrella-beach"></i> All Holidays</h3>
+                        </div>
+                        <div class="panel-body" id="holidaysOverview">
+                            <div class="empty-panel"><i class="fas fa-spinner fa-spin"></i>
+                                <p style="font-size:.8rem">Loading…</p>
+                            </div>
+                        </div>
+                        <div style="padding:.5rem .75rem .75rem">
+                            <button class="add-holiday-btn" id="addHolidayBtn">
+                                <i class="fas fa-plus"></i> Add Holiday
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card">
-            <div class="card-head">
-                <h3><i class="fas fa-umbrella-beach"></i> All Holidays</h3>
+            <!-- Modal -->
+            <div class="modal-bg" id="holidayModal">
+                <div class="modal-box">
+                    <div class="modal-head">
+                        <h3><i class="fas fa-umbrella-beach" style="color:var(--holiday);margin-right:.4rem"></i> Add
+                            Holiday</h3>
+                        <button class="modal-close" id="closeModal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="holidayDate">Date <span style="color:var(--danger)">*</span></label>
+                            <input type="date" id="holidayDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="holidayName">Holiday Name <span style="color:var(--danger)">*</span></label>
+                            <input type="text" id="holidayName" placeholder="e.g., Eid ul-Fitr" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="holidayDesc">Description <span
+                                    style="color:var(--muted);font-weight:400">(optional)</span></label>
+                            <textarea id="holidayDesc" placeholder="Any notes about this holiday…"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-foot">
+                        <button class="btn-cancel" id="cancelModal">Cancel</button>
+                        <button class="btn-save" id="saveHolidayBtn"><i class="fas fa-check"></i> Save Holiday</button>
+                    </div>
+                </div>
             </div>
-            <div class="panel-body" id="holidaysOverview">
-                <div class="empty-panel"><i class="fas fa-spinner fa-spin"></i><p style="font-size:.8rem">Loading…</p></div>
-            </div>
-            <div style="padding:.5rem .75rem .75rem">
-                <button class="add-holiday-btn" id="addHolidayBtn">
-                    <i class="fas fa-plus"></i> Add Holiday
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+        </div><!-- /.app-main -->
+    </div><!-- /.app -->
 
-<!-- Modal -->
-<div class="modal-bg" id="holidayModal">
-    <div class="modal-box">
-        <div class="modal-head">
-            <h3><i class="fas fa-umbrella-beach" style="color:var(--holiday);margin-right:.4rem"></i> Add Holiday</h3>
-            <button class="modal-close" id="closeModal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="holidayDate">Date <span style="color:var(--danger)">*</span></label>
-                <input type="date" id="holidayDate" required>
-            </div>
-            <div class="form-group">
-                <label for="holidayName">Holiday Name <span style="color:var(--danger)">*</span></label>
-                <input type="text" id="holidayName" placeholder="e.g., Eid ul-Fitr" required>
-            </div>
-            <div class="form-group">
-                <label for="holidayDesc">Description <span style="color:var(--muted);font-weight:400">(optional)</span></label>
-                <textarea id="holidayDesc" placeholder="Any notes about this holiday…"></textarea>
-            </div>
-        </div>
-        <div class="modal-foot">
-            <button class="btn-cancel" id="cancelModal">Cancel</button>
-            <button class="btn-save" id="saveHolidayBtn"><i class="fas fa-check"></i> Save Holiday</button>
-        </div>
-    </div>
-</div>
-    </div><!-- /.app-main -->
-</div><!-- /.app -->
+    <div class="toast-wrap" id="toastWrap"></div>
 
-<div class="toast-wrap" id="toastWrap"></div>
-
-<script src="../assets/js/calendar.js"></script>
+    <script src="../assets/js/calendar.js"></script>
 </body>
+
 </html>

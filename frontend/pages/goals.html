@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,199 +10,205 @@
     <link rel="stylesheet" href="../assets/css/app-shell.css">
     <link rel="stylesheet" href="../assets/css/goals.css">
 </head>
+
 <body>
     <script>
         fetch("/Student-Productivity-Hub/backend/check_auth.php")
-            .then(res=>res.text())
-            .then(res=>{
-                if(res=="unauthorized"){
+            .then(res => res.text())
+            .then(res => {
+                if (res == "unauthorized") {
                     window.location = "login.html";
                 }
             });
     </script>
 
-<div class="app" id="app">
-    <aside class="app-sidebar">
-        <div class="brand">
-            <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
-            <div class="brand-name">StudyHub</div>
-        </div>
-        <div class="nav-section-label">Main</div>
-        <ul class="nav">
-            <li><a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
-            <li><a href="notes.html"><i class="fas fa-sticky-note"></i><span>My Notes</span></a></li>
-            <li><a href="assignments.html"><i class="fas fa-tasks"></i><span>Assignments</span></a></li>
-            <li><a href="timer.html"><i class="fas fa-hourglass-half"></i><span>Pomodoro Timer</span></a></li>
-        </ul>
-        <div class="nav-section-label">Insights</div>
-        <ul class="nav">
-            <li><a href="goals.html" class="active"><i class="fas fa-bullseye"></i><span>Goals</span></a></li>
-            <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a></li>
-        </ul>
-        <div class="nav-section-label">Account</div>
-        <ul class="nav">
-            <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
-            <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
-        </ul>
-        <div class="sidebar-footer">
-            <div class="user-chip">
-                <div class="user-avatar">S</div>
-                <div class="user-meta"><strong>Student</strong><span>Welcome back</span></div>
+    <div class="app" id="app">
+        <aside class="app-sidebar">
+            <div class="brand">
+                <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
+                <div class="brand-name">StudyHub</div>
             </div>
-        </div>
-    </aside>
-
-    <div class="app-main">
-        <header class="topbar">
-            <div style="display:flex;align-items:center;gap:.75rem;">
-                <button class="menu-btn icon-btn" onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i class="fas fa-bars"></i></button>
-                <div class="topbar-title">
-                    <h1>My Goals</h1>
-                    <p>Set and track your academic goals with priorities and deadlines</p>
+            <div class="nav-section-label">Main</div>
+            <ul class="nav">
+                <li><a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                <li><a href="notes.html"><i class="fas fa-sticky-note"></i><span>My Notes</span></a></li>
+                <li><a href="assignments.html"><i class="fas fa-tasks"></i><span>Assignments</span></a></li>
+                <li><a href="timer.html"><i class="fas fa-hourglass-half"></i><span>Pomodoro Timer</span></a></li>
+            </ul>
+            <div class="nav-section-label">Insights</div>
+            <ul class="nav">
+                <li><a href="goals.html" class="active"><i class="fas fa-bullseye"></i><span>Goals</span></a></li>
+                <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a></li>
+                <li><a href="analytics.html"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
+            </ul>
+            <div class="nav-section-label">Account</div>
+            <ul class="nav">
+                <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+                <li><a href="#" onclick="logout(); return false;"><i
+                            class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-chip">
+                    <div class="user-avatar">S</div>
+                    <div class="user-meta"><strong>Student</strong><span>Welcome back</span></div>
                 </div>
             </div>
-        </header>
+        </aside>
 
-<main class="main-container">
+        <div class="app-main">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:.75rem;">
+                    <button class="menu-btn icon-btn"
+                        onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i
+                            class="fas fa-bars"></i></button>
+                    <div class="topbar-title">
+                        <h1>My Goals</h1>
+                        <p>Set and track your academic goals with priorities and deadlines</p>
+                    </div>
+                </div>
+            </header>
 
-    <!-- ── Action Bar (always visible) ─────────── -->
-    <div class="action-bar">
-        <button class="load-goals-btn" id="loadGoalsBtn">
-            <i class="fas fa-folder-open"></i> View My Goals
-        </button>
-        <button class="add-goal-btn" id="addGoalBtn">
-            <i class="fas fa-plus"></i> Add Goal
-        </button>
-    </div>
+            <main class="main-container">
 
-    <!-- ── Goals Section (hidden until user clicks View My Goals) ── -->
-    <section id="goalsSection" style="display:none;">
+                <!-- ── Action Bar (always visible) ─────────── -->
+                <div class="action-bar">
+                    <button class="load-goals-btn" id="loadGoalsBtn">
+                        <i class="fas fa-folder-open"></i> View My Goals
+                    </button>
+                    <button class="add-goal-btn" id="addGoalBtn">
+                        <i class="fas fa-plus"></i> Add Goal
+                    </button>
+                </div>
 
-        <!-- Toolbar -->
-        <div class="toolbar">
-            <div class="search-wrap">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search goals…" autocomplete="off">
-            </div>
-        </div>
+                <!-- ── Goals Section (hidden until user clicks View My Goals) ── -->
+                <section id="goalsSection" style="display:none;">
 
-        <!-- Filter tabs -->
-        <div class="filter-tabs">
-            <button class="filter-tab active" data-filter="all">All Goals</button>
-            <button class="filter-tab" data-filter="pending">
-                <i class="fas fa-clock"></i> Pending
-            </button>
-            <button class="filter-tab" data-filter="in_progress">
-                <i class="fas fa-spinner"></i> In Progress
-            </button>
-            <button class="filter-tab" data-filter="completed">
-                <i class="fas fa-check-circle"></i> Completed
-            </button>
-        </div>
+                    <!-- Toolbar -->
+                    <div class="toolbar">
+                        <div class="search-wrap">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Search goals…" autocomplete="off">
+                        </div>
+                    </div>
 
-        <!-- Priority filter -->
-        <div class="priority-filter">
-            <label>Priority:</label>
-            <select id="priorityFilter">
-                <option value="">All Priorities</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-            </select>
-        </div>
+                    <!-- Filter tabs -->
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" data-filter="all">All Goals</button>
+                        <button class="filter-tab" data-filter="pending">
+                            <i class="fas fa-clock"></i> Pending
+                        </button>
+                        <button class="filter-tab" data-filter="in_progress">
+                            <i class="fas fa-spinner"></i> In Progress
+                        </button>
+                        <button class="filter-tab" data-filter="completed">
+                            <i class="fas fa-check-circle"></i> Completed
+                        </button>
+                    </div>
 
-        <!-- Goals Grid -->
-        <div class="goals-grid" id="goalsGrid">
-            <!-- Populated by goals.js -->
-        </div>
+                    <!-- Priority filter -->
+                    <div class="priority-filter">
+                        <label>Priority:</label>
+                        <select id="priorityFilter">
+                            <option value="">All Priorities</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
 
-    </section>
+                    <!-- Goals Grid -->
+                    <div class="goals-grid" id="goalsGrid">
+                        <!-- Populated by goals.js -->
+                    </div>
 
-</main>
-    </div><!-- /.app-main -->
-</div><!-- /.app -->
+                </section>
 
-<!-- ═══════════════════════════════════════════
+            </main>
+        </div><!-- /.app-main -->
+    </div><!-- /.app -->
+
+    <!-- ═══════════════════════════════════════════
      ADD/EDIT GOAL MODAL
      ═══════════════════════════════════════════ -->
-<div class="modal-overlay" id="goalModalOverlay">
-    <div class="modal">
-        <div class="modal-header">
-            <h2 id="modalTitle">Add New Goal</h2>
-            <button class="modal-close" id="closeGoalModal">&times;</button>
-        </div>
-
-        <form id="goalForm" class="goal-form">
-            <input type="hidden" id="goalId" value="">
-
-            <div class="form-group">
-                <label for="goalText">Goal</label>
-                <textarea id="goalText" placeholder="What do you want to achieve?" required></textarea>
+    <div class="modal-overlay" id="goalModalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Goal</h2>
+                <button class="modal-close" id="closeGoalModal">&times;</button>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="targetDate">Target Date</label>
-                    <input type="date" id="targetDate" required>
-                </div>
+            <form id="goalForm" class="goal-form">
+                <input type="hidden" id="goalId" value="">
 
                 <div class="form-group">
-                    <label for="priority">Priority</label>
-                    <select id="priority" required>
-                        <option value="low">Low</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="high">High</option>
+                    <label for="goalText">Goal</label>
+                    <textarea id="goalText" placeholder="What do you want to achieve?" required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="targetDate">Target Date</label>
+                        <input type="date" id="targetDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="priority">Priority</label>
+                        <select id="priority" required>
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" id="statusGroup" style="display:none;">
+                    <label for="status">Status</label>
+                    <select id="status">
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
                     </select>
                 </div>
-            </div>
 
-            <div class="form-group" id="statusGroup" style="display:none;">
-                <label for="status">Status</label>
-                <select id="status">
-                    <option value="pending">Pending</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="completed">Completed</option>
-                </select>
-            </div>
-
-            <div class="form-actions">
-                <button type="button" class="btn-cancel" id="goalFormCancel">Cancel</button>
-                <button type="submit" class="btn-submit">Save Goal</button>
-            </div>
-        </form>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" id="goalFormCancel">Cancel</button>
+                    <button type="submit" class="btn-submit">Save Goal</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<!-- ═══════════════════════════════════════════
+    <!-- ═══════════════════════════════════════════
      GOAL DETAIL MODAL (for viewing/editing)
      ═══════════════════════════════════════════ -->
-<div class="modal-overlay" id="goalDetailOverlay">
-    <div class="modal goal-detail-modal">
-        <div class="modal-header">
-            <h2 id="detailTitle">Goal Details</h2>
-            <button class="modal-close" id="closeDetailModal">&times;</button>
-        </div>
+    <div class="modal-overlay" id="goalDetailOverlay">
+        <div class="modal goal-detail-modal">
+            <div class="modal-header">
+                <h2 id="detailTitle">Goal Details</h2>
+                <button class="modal-close" id="closeDetailModal">&times;</button>
+            </div>
 
-        <div class="goal-detail-content" id="goalDetailContent">
-            <!-- Populated by goals.js -->
-        </div>
+            <div class="goal-detail-content" id="goalDetailContent">
+                <!-- Populated by goals.js -->
+            </div>
 
-        <div class="detail-actions">
-            <button class="btn-secondary" id="editGoalBtn">
-                <i class="fas fa-edit"></i> Edit
-            </button>
-            <button class="btn-secondary" id="changeStatusBtn">
-                <i class="fas fa-exchange-alt"></i> Change Status
-            </button>
-            <button class="btn-danger" id="deleteGoalBtn">
-                <i class="fas fa-trash"></i> Delete
-            </button>
+            <div class="detail-actions">
+                <button class="btn-secondary" id="editGoalBtn">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="btn-secondary" id="changeStatusBtn">
+                    <i class="fas fa-exchange-alt"></i> Change Status
+                </button>
+                <button class="btn-danger" id="deleteGoalBtn">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
 
-<script src="../assets/js/goals.js"></script>
+    <script src="../assets/js/goals.js"></script>
 
 </body>
+
 </html>

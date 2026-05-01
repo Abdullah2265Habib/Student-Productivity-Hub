@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,52 +10,59 @@
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/assignments.css">
 </head>
-<body>
-<div class="app" id="app">
-    <aside class="app-sidebar">
-        <div class="brand">
-            <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
-            <div class="brand-name">StudyHub</div>
-        </div>
-        <div class="nav-section-label">Main</div>
-        <ul class="nav">
-            <li><a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
-            <li><a href="notes.html"><i class="fas fa-sticky-note"></i><span>My Notes</span></a></li>
-            <li><a href="assignments.html" class="active"><i class="fas fa-tasks"></i><span>Assignments</span></a></li>
-            <li><a href="timer.html"><i class="fas fa-hourglass-half"></i><span>Pomodoro Timer</span></a></li>
-        </ul>
-        <div class="nav-section-label">Insights</div>
-        <ul class="nav">
-            <li><a href="goals.html"><i class="fas fa-bullseye"></i><span>Goals</span></a></li>
-            <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a></li>
-        </ul>
-        <div class="nav-section-label">Account</div>
-        <ul class="nav">
-            <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
-            <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
-        </ul>
-        <div class="sidebar-footer">
-            <div class="user-chip">
-                <div class="user-avatar">S</div>
-                <div class="user-meta"><strong id="userName">Student</strong><span>Welcome back</span></div>
-            </div>
-        </div>
-    </aside>
 
-    <div class="app-main">
-        <header class="topbar">
-            <div style="display:flex;align-items:center;gap:.75rem;">
-                <button class="menu-btn icon-btn" onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i class="fas fa-bars"></i></button>
-                <div class="topbar-title">
-                    <h1>Assignments</h1>
-                    <p>Manage your assignments and track their status</p>
+<body>
+    <div class="app" id="app">
+        <aside class="app-sidebar">
+            <div class="brand">
+                <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
+                <div class="brand-name">StudyHub</div>
+            </div>
+            <div class="nav-section-label">Main</div>
+            <ul class="nav">
+                <li><a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                <li><a href="notes.html"><i class="fas fa-sticky-note"></i><span>My Notes</span></a></li>
+                <li><a href="assignments.html" class="active"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+                </li>
+                <li><a href="timer.html"><i class="fas fa-hourglass-half"></i><span>Pomodoro Timer</span></a></li>
+            </ul>
+            <div class="nav-section-label">Insights</div>
+            <ul class="nav">
+                <li><a href="goals.html"><i class="fas fa-bullseye"></i><span>Goals</span></a></li>
+                <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a></li>
+                <li><a href="analytics.html"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
+            </ul>
+            <div class="nav-section-label">Account</div>
+            <ul class="nav">
+                <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+                <li><a href="#" onclick="logout(); return false;"><i
+                            class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-chip">
+                    <div class="user-avatar">S</div>
+                    <div class="user-meta"><strong id="userName">Student</strong><span>Welcome back</span></div>
                 </div>
             </div>
-            <div class="topbar-actions">
-                <button class="btn btn-primary" onclick="openAddModal()"><i class="fas fa-plus"></i> New Assignment</button>
-            </div>
-        </header>
-        <main class="page">
+        </aside>
+
+        <div class="app-main">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:.75rem;">
+                    <button class="menu-btn icon-btn"
+                        onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i
+                            class="fas fa-bars"></i></button>
+                    <div class="topbar-title">
+                        <h1>Assignments</h1>
+                        <p>Manage your assignments and track their status</p>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <button class="btn btn-primary" onclick="openAddModal()"><i class="fas fa-plus"></i> New
+                        Assignment</button>
+                </div>
+            </header>
+            <main class="page">
 
                 <!-- Quick Actions -->
                 <div class="quick-actions">
@@ -167,4 +175,5 @@
 
     <script src="../assets/js/assignments.js"></script>
 </body>
+
 </html>

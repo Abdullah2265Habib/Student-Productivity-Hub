@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,262 +10,285 @@
     <link rel="stylesheet" href="../assets/css/app-shell.css">
     <link rel="stylesheet" href="../assets/css/notes.css">
 </head>
+
 <body>
     <script>
         fetch("/Student-Productivity-Hub/backend/check_auth.php")
-            .then(res=>res.text())
-            .then(res=>{
-                if(res=="unauthorized"){
+            .then(res => res.text())
+            .then(res => {
+                if (res == "unauthorized") {
                     window.location = "login.html?redirect=notes.html";
                 }
             });
     </script>
 
-<div class="app" id="app">
-    <!-- Sidebar -->
-    <aside class="app-sidebar">
-        <div class="brand">
-            <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
-            <div class="brand-name">StudyHub</div>
-        </div>
-        <div class="nav-section-label">Main</div>
-        <ul class="nav">
-            <li><a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
-            <li><a href="notes.html" class="active"><i class="fas fa-sticky-note"></i><span>My Notes</span></a></li>
-            <li><a href="assignments.html"><i class="fas fa-tasks"></i><span>Assignments</span></a></li>
-            <li><a href="timer.html"><i class="fas fa-hourglass-half"></i><span>Pomodoro Timer</span></a></li>
-        </ul>
-        <div class="nav-section-label">Insights</div>
-        <ul class="nav">
-            <li><a href="goals.html"><i class="fas fa-bullseye"></i><span>Goals</span></a></li>
-            <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a></li>
-        </ul>
-        <div class="nav-section-label">Account</div>
-        <ul class="nav">
-            <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
-            <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
-        </ul>
-        <div class="sidebar-footer">
-            <div class="user-chip">
-                <div class="user-avatar">S</div>
-                <div class="user-meta"><strong>Student</strong><span>Welcome back</span></div>
+    <div class="app" id="app">
+        <!-- Sidebar -->
+        <aside class="app-sidebar">
+            <div class="brand">
+                <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
+                <div class="brand-name">StudyHub</div>
             </div>
-        </div>
-    </aside>
-
-    <!-- Main column -->
-    <div class="app-main">
-        <header class="topbar">
-            <div style="display:flex;align-items:center;gap:.75rem;">
-                <button class="menu-btn icon-btn" onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i class="fas fa-bars"></i></button>
-                <div class="topbar-title">
-                    <h1>My Notes</h1>
-                    <p>Keep all your study notes and PDFs in one organised place</p>
+            <div class="nav-section-label">Main</div>
+            <ul class="nav">
+                <li><a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                <li><a href="notes.html" class="active"><i class="fas fa-sticky-note"></i><span>My Notes</span></a></li>
+                <li><a href="assignments.html"><i class="fas fa-tasks"></i><span>Assignments</span></a></li>
+                <li><a href="timer.html"><i class="fas fa-hourglass-half"></i><span>Pomodoro Timer</span></a></li>
+            </ul>
+            <div class="nav-section-label">Insights</div>
+            <ul class="nav">
+                <li><a href="goals.html"><i class="fas fa-bullseye"></i><span>Goals</span></a></li>
+                <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a></li>
+                <li><a href="analytics.html"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
+            </ul>
+            <div class="nav-section-label">Account</div>
+            <ul class="nav">
+                <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+                <li><a href="#" onclick="logout(); return false;"><i
+                            class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-chip">
+                    <div class="user-avatar">S</div>
+                    <div class="user-meta"><strong>Student</strong><span>Welcome back</span></div>
                 </div>
             </div>
-            <div class="viewer-actions">
-                <button class="btn btn-primary" id="addNoteBtn"><i class="fas fa-plus"></i> New Note</button>
-            </div>
-        </header>
+        </aside>
 
-        <!-- 2-column notes layout -->
-        <div class="notes-layout">
-            <!-- Left: notes list -->
-            <aside class="notes-side">
-                <div class="notes-side-head">
-                    <h2 class="notes-side-title">My Notes</h2>
-                    <div class="search-wrap">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search notes…" autocomplete="off">
-                    </div>
-                    <div class="filter-tabs">
-                        <button class="filter-tab active" data-filter="all">All</button>
-                        <button class="filter-tab" data-filter="text"><i class="fas fa-align-left"></i> Text</button>
-                        <button class="filter-tab" data-filter="pdf"><i class="fas fa-file-pdf"></i> PDF</button>
-                    </div>
-                    <div class="action-bar">
-                        <button class="load-notes-btn" id="loadNotesBtn">
-                            <i class="fas fa-folder-open"></i> View My Notes
-                        </button>
+        <!-- Main column -->
+        <div class="app-main">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:.75rem;">
+                    <button class="menu-btn icon-btn"
+                        onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i
+                            class="fas fa-bars"></i></button>
+                    <div class="topbar-title">
+                        <h1>My Notes</h1>
+                        <p>Keep all your study notes and PDFs in one organised place</p>
                     </div>
                 </div>
+                <div class="viewer-actions">
+                    <button class="btn btn-primary" id="addNoteBtn"><i class="fas fa-plus"></i> New Note</button>
+                </div>
+            </header>
 
-                <section id="notesSection" style="display:none;">
-                    <div class="notes-grid" id="notesGrid"></div>
+            <!-- 2-column notes layout -->
+            <div class="notes-layout">
+                <!-- Left: notes list -->
+                <aside class="notes-side">
+                    <div class="notes-side-head">
+                        <h2 class="notes-side-title">My Notes</h2>
+                        <div class="search-wrap">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Search notes…" autocomplete="off">
+                        </div>
+                        <div class="filter-tabs">
+                            <button class="filter-tab active" data-filter="all">All</button>
+                            <button class="filter-tab" data-filter="text"><i class="fas fa-align-left"></i>
+                                Text</button>
+                            <button class="filter-tab" data-filter="pdf"><i class="fas fa-file-pdf"></i> PDF</button>
+                        </div>
+                        <div class="action-bar">
+                            <button class="load-notes-btn" id="loadNotesBtn">
+                                <i class="fas fa-folder-open"></i> View My Notes
+                            </button>
+                        </div>
+                    </div>
+
+                    <section id="notesSection" style="display:none;">
+                        <div class="notes-grid" id="notesGrid"></div>
+                    </section>
+                </aside>
+
+                <!-- Right: viewer -->
+                <section class="notes-viewer" id="notesViewer">
+                    <div class="viewer-empty" id="viewerEmpty">
+                        <div>
+                            <i class="fas fa-sticky-note"></i>
+                            <h3>Select a note to view</h3>
+                            <p>Click <em>View My Notes</em> and then choose any note from the list.</p>
+                        </div>
+                    </div>
+                    <div class="viewer-content" id="viewerContent" style="display:none;">
+                        <div class="viewer-toolbar">
+                            <div class="viewer-meta">
+                                <span class="pill" id="viewerBadge"></span>
+                                <span class="viewer-date" id="viewerDate"></span>
+                                <span class="read-time-badge" id="viewerReadTime" style="display:none;"></span>
+                            </div>
+                            <div class="viewer-actions">
+                                <button class="btn" id="viewerEditBtn"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="btn btn-danger" id="viewerDeleteBtn"><i class="fas fa-trash"></i>
+                                    Delete</button>
+                            </div>
+                        </div>
+                        <div class="viewer-body" id="viewerBody"></div>
+                    </div>
                 </section>
-            </aside>
-
-            <!-- Right: viewer -->
-            <section class="notes-viewer" id="notesViewer">
-                <div class="viewer-empty" id="viewerEmpty">
-                    <div>
-                        <i class="fas fa-sticky-note"></i>
-                        <h3>Select a note to view</h3>
-                        <p>Click <em>View My Notes</em> and then choose any note from the list.</p>
-                    </div>
-                </div>
-                <div class="viewer-content" id="viewerContent" style="display:none;">
-                    <div class="viewer-toolbar">
-                        <div class="viewer-meta">
-                            <span class="pill" id="viewerBadge"></span>
-                            <span class="viewer-date" id="viewerDate"></span>
-                            <span class="read-time-badge" id="viewerReadTime" style="display:none;"></span>
-                        </div>
-                        <div class="viewer-actions">
-                            <button class="btn" id="viewerEditBtn"><i class="fas fa-edit"></i> Edit</button>
-                            <button class="btn btn-danger" id="viewerDeleteBtn"><i class="fas fa-trash"></i> Delete</button>
-                        </div>
-                    </div>
-                    <div class="viewer-body" id="viewerBody"></div>
-                </div>
-            </section>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- ═══════════════════════════════════════════
+    <!-- ═══════════════════════════════════════════
      MODAL OVERLAY
      ═══════════════════════════════════════════ -->
-<div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-        <div class="modal-chooser" id="chooserView">
-            <h2>Add a Note</h2>
-            <p>What type of note would you like to add?</p>
-            <div class="choose-grid">
-                <div class="choose-card text-opt" id="textCard">
-                    <i class="fas fa-keyboard"></i>
-                    <span>Write Text</span>
-                    <small>Type your note directly</small>
-                </div>
-                <div class="choose-card pdf-opt" id="pdfCard">
-                    <i class="fas fa-file-pdf"></i>
-                    <span>Upload PDF</span>
-                    <small>Attach a PDF document</small>
-                </div>
-            </div>
-            <div class="modal-chooser-footer">
-                <button class="btn btn-ghost" id="chooserCancelBtn">Cancel</button>
-                <button class="btn btn-primary" id="chooserNextBtn">Continue <i class="fas fa-arrow-right"></i></button>
-            </div>
-        </div>
-
-        <div class="modal-form" id="textFormView">
-            <div class="modal-form-header">
-                <h2><i class="fas fa-align-left"></i> Write a Text Note</h2>
-                <button class="close-modal-btn" id="closeTextModal" title="Close"><i class="fas fa-times"></i></button>
-            </div>
-            <form id="textForm">
-                <div class="modal-form-body">
-                    <div class="form-group">
-                        <label for="noteText">Note Content <span style="color:var(--danger)">*</span></label>
-                        <textarea id="noteText" name="note_text" placeholder="Start writing your note here…" required maxlength="10000"></textarea>
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-chooser" id="chooserView">
+                <h2>Add a Note</h2>
+                <p>What type of note would you like to add?</p>
+                <div class="choose-grid">
+                    <div class="choose-card text-opt" id="textCard">
+                        <i class="fas fa-keyboard"></i>
+                        <span>Write Text</span>
+                        <small>Type your note directly</small>
+                    </div>
+                    <div class="choose-card pdf-opt" id="pdfCard">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Upload PDF</span>
+                        <small>Attach a PDF document</small>
                     </div>
                 </div>
-                <div class="modal-form-footer">
-                    <button type="button" class="btn btn-ghost" id="textBackBtn"><i class="fas fa-arrow-left"></i> Back</button>
-                    <button type="submit" class="btn btn-primary" id="textSubmitBtn"><i class="fas fa-save"></i> Save Note</button>
+                <div class="modal-chooser-footer">
+                    <button class="btn btn-ghost" id="chooserCancelBtn">Cancel</button>
+                    <button class="btn btn-primary" id="chooserNextBtn">Continue <i
+                            class="fas fa-arrow-right"></i></button>
                 </div>
-            </form>
-        </div>
-
-        <div class="modal-form" id="pdfFormView">
-            <div class="modal-form-header">
-                <h2 class="pdf-title"><i class="fas fa-file-pdf"></i> Upload PDF Note</h2>
-                <button class="close-modal-btn" id="closePdfModal" title="Close"><i class="fas fa-times"></i></button>
             </div>
-            <form id="pdfForm" enctype="multipart/form-data">
-                <div class="modal-form-body">
-                    <div class="form-group">
-                        <label>PDF File <span style="color:var(--danger)">*</span></label>
-                        <div class="drop-zone" id="dropZone">
-                            <input type="file" id="pdfFileInput" name="file" accept="application/pdf">
-                            <div class="drop-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                            <h4>Drag &amp; drop your PDF here</h4>
-                            <p>or click to browse &nbsp;·&nbsp; max 10 MB</p>
-                        </div>
-                        <div class="file-chosen" id="fileChosen">
-                            <i class="fas fa-file-pdf"></i>
-                            <span id="fileChosenName"></span>
-                            <button type="button" class="remove-file" id="removeFileBtn" title="Remove"><i class="fas fa-times"></i></button>
+
+            <div class="modal-form" id="textFormView">
+                <div class="modal-form-header">
+                    <h2><i class="fas fa-align-left"></i> Write a Text Note</h2>
+                    <button class="close-modal-btn" id="closeTextModal" title="Close"><i
+                            class="fas fa-times"></i></button>
+                </div>
+                <form id="textForm">
+                    <div class="modal-form-body">
+                        <div class="form-group">
+                            <label for="noteText">Note Content <span style="color:var(--danger)">*</span></label>
+                            <textarea id="noteText" name="note_text" placeholder="Start writing your note here…"
+                                required maxlength="10000"></textarea>
                         </div>
                     </div>
+                    <div class="modal-form-footer">
+                        <button type="button" class="btn btn-ghost" id="textBackBtn"><i class="fas fa-arrow-left"></i>
+                            Back</button>
+                        <button type="submit" class="btn btn-primary" id="textSubmitBtn"><i class="fas fa-save"></i>
+                            Save Note</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-form" id="pdfFormView">
+                <div class="modal-form-header">
+                    <h2 class="pdf-title"><i class="fas fa-file-pdf"></i> Upload PDF Note</h2>
+                    <button class="close-modal-btn" id="closePdfModal" title="Close"><i
+                            class="fas fa-times"></i></button>
                 </div>
-                <div class="modal-form-footer">
-                    <button type="button" class="btn btn-ghost" id="pdfBackBtn"><i class="fas fa-arrow-left"></i> Back</button>
-                    <button type="submit" class="btn btn-primary" id="pdfSubmitBtn"><i class="fas fa-upload"></i> Upload PDF</button>
-                </div>
-            </form>
+                <form id="pdfForm" enctype="multipart/form-data">
+                    <div class="modal-form-body">
+                        <div class="form-group">
+                            <label>PDF File <span style="color:var(--danger)">*</span></label>
+                            <div class="drop-zone" id="dropZone">
+                                <input type="file" id="pdfFileInput" name="file" accept="application/pdf">
+                                <div class="drop-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                                <h4>Drag &amp; drop your PDF here</h4>
+                                <p>or click to browse &nbsp;·&nbsp; max 10 MB</p>
+                            </div>
+                            <div class="file-chosen" id="fileChosen">
+                                <i class="fas fa-file-pdf"></i>
+                                <span id="fileChosenName"></span>
+                                <button type="button" class="remove-file" id="removeFileBtn" title="Remove"><i
+                                        class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-form-footer">
+                        <button type="button" class="btn btn-ghost" id="pdfBackBtn"><i class="fas fa-arrow-left"></i>
+                            Back</button>
+                        <button type="submit" class="btn btn-primary" id="pdfSubmitBtn"><i class="fas fa-upload"></i>
+                            Upload PDF</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- EDIT TEXT NOTE MODAL -->
-<div class="modal-overlay" id="editModalOverlay">
-    <div class="modal">
-        <div class="modal-form visible">
-            <div class="modal-form-header">
-                <h2><i class="fas fa-edit"></i> Edit Text Note</h2>
-                <button class="close-modal-btn" id="closeEditModal" title="Close"><i class="fas fa-times"></i></button>
-            </div>
-            <form id="editNoteForm">
-                <input type="hidden" id="editNoteId">
-                <div class="modal-form-body">
-                    <div class="form-group">
-                        <label for="editNoteText">Note Content <span style="color:var(--danger)">*</span></label>
-                        <textarea id="editNoteText" name="note_text" placeholder="Edit your note here…" required maxlength="10000"></textarea>
-                    </div>
+    <!-- EDIT TEXT NOTE MODAL -->
+    <div class="modal-overlay" id="editModalOverlay">
+        <div class="modal">
+            <div class="modal-form visible">
+                <div class="modal-form-header">
+                    <h2><i class="fas fa-edit"></i> Edit Text Note</h2>
+                    <button class="close-modal-btn" id="closeEditModal" title="Close"><i
+                            class="fas fa-times"></i></button>
                 </div>
-                <div class="modal-form-footer">
-                    <button type="button" class="btn btn-ghost" id="editCancelBtn">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="editSubmitBtn"><i class="fas fa-save"></i> Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- EDIT PDF NOTE MODAL -->
-<div class="modal-overlay" id="editPdfModalOverlay">
-    <div class="modal">
-        <div class="modal-form visible">
-            <div class="modal-form-header">
-                <h2 class="pdf-title"><i class="fas fa-file-pdf"></i> Replace PDF</h2>
-                <button class="close-modal-btn" id="closeEditPdfModal" title="Close"><i class="fas fa-times"></i></button>
-            </div>
-            <form id="editPdfForm" enctype="multipart/form-data">
-                <input type="hidden" id="editPdfNoteId">
-                <div class="modal-form-body">
-                    <p style="color:var(--text-3);font-size:.85rem;margin-bottom:1rem;">
-                        <i class="fas fa-info-circle" style="color:var(--primary)"></i>
-                        Upload a new PDF to replace the existing one.
-                    </p>
-                    <div class="form-group">
-                        <label>New PDF File <span style="color:var(--danger)">*</span></label>
-                        <div class="drop-zone" id="editPdfDropZone">
-                            <input type="file" id="editPdfFileInput" name="file" accept="application/pdf">
-                            <div class="drop-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                            <h4>Drag &amp; drop your PDF here</h4>
-                            <p>or click to browse &nbsp;·&nbsp; max 10 MB</p>
-                        </div>
-                        <div class="file-chosen" id="editPdfFileChosen">
-                            <i class="fas fa-file-pdf"></i>
-                            <span id="editPdfFileChosenName"></span>
-                            <button type="button" class="remove-file" id="editPdfRemoveFile" title="Remove"><i class="fas fa-times"></i></button>
+                <form id="editNoteForm">
+                    <input type="hidden" id="editNoteId">
+                    <div class="modal-form-body">
+                        <div class="form-group">
+                            <label for="editNoteText">Note Content <span style="color:var(--danger)">*</span></label>
+                            <textarea id="editNoteText" name="note_text" placeholder="Edit your note here…" required
+                                maxlength="10000"></textarea>
                         </div>
                     </div>
-                </div>
-                <div class="modal-form-footer">
-                    <button type="button" class="btn btn-ghost" id="editPdfCancelBtn">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="editPdfSubmitBtn"><i class="fas fa-upload"></i> Replace PDF</button>
-                </div>
-            </form>
+                    <div class="modal-form-footer">
+                        <button type="button" class="btn btn-ghost" id="editCancelBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="editSubmitBtn"><i class="fas fa-save"></i>
+                            Save Changes</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Toast container -->
-<div class="toast-container" id="toastContainer"></div>
+    <!-- EDIT PDF NOTE MODAL -->
+    <div class="modal-overlay" id="editPdfModalOverlay">
+        <div class="modal">
+            <div class="modal-form visible">
+                <div class="modal-form-header">
+                    <h2 class="pdf-title"><i class="fas fa-file-pdf"></i> Replace PDF</h2>
+                    <button class="close-modal-btn" id="closeEditPdfModal" title="Close"><i
+                            class="fas fa-times"></i></button>
+                </div>
+                <form id="editPdfForm" enctype="multipart/form-data">
+                    <input type="hidden" id="editPdfNoteId">
+                    <div class="modal-form-body">
+                        <p style="color:var(--text-3);font-size:.85rem;margin-bottom:1rem;">
+                            <i class="fas fa-info-circle" style="color:var(--primary)"></i>
+                            Upload a new PDF to replace the existing one.
+                        </p>
+                        <div class="form-group">
+                            <label>New PDF File <span style="color:var(--danger)">*</span></label>
+                            <div class="drop-zone" id="editPdfDropZone">
+                                <input type="file" id="editPdfFileInput" name="file" accept="application/pdf">
+                                <div class="drop-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                                <h4>Drag &amp; drop your PDF here</h4>
+                                <p>or click to browse &nbsp;·&nbsp; max 10 MB</p>
+                            </div>
+                            <div class="file-chosen" id="editPdfFileChosen">
+                                <i class="fas fa-file-pdf"></i>
+                                <span id="editPdfFileChosenName"></span>
+                                <button type="button" class="remove-file" id="editPdfRemoveFile" title="Remove"><i
+                                        class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-form-footer">
+                        <button type="button" class="btn btn-ghost" id="editPdfCancelBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="editPdfSubmitBtn"><i
+                                class="fas fa-upload"></i> Replace PDF</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-<script src="../assets/js/notes.js"></script>
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../assets/js/notes.js"></script>
 </body>
+
 </html>

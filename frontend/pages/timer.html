@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="../assets/css/app-shell.css">
     <link rel="stylesheet" href="../assets/css/timer.css">
 </head>
+
 <body>
 
     <!-- Auth guard -->
@@ -18,171 +20,182 @@
             .then(t => { if (t.trim() === 'unauthorized') window.location.href = 'login.html'; });
     </script>
 
-<div class="app" id="app">
-    <aside class="app-sidebar">
-        <div class="brand">
-            <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
-            <div class="brand-name">StudyHub</div>
-        </div>
-        <div class="nav-section-label">Main</div>
-        <ul class="nav">
-            <li><a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
-            <li><a href="notes.html"><i class="fas fa-sticky-note"></i><span>My Notes</span></a></li>
-            <li><a href="assignments.html"><i class="fas fa-tasks"></i><span>Assignments</span></a></li>
-            <li><a href="timer.html" class="active"><i class="fas fa-hourglass-half"></i><span>Pomodoro Timer</span></a></li>
-        </ul>
-        <div class="nav-section-label">Insights</div>
-        <ul class="nav">
-            <li><a href="goals.html"><i class="fas fa-bullseye"></i><span>Goals</span></a></li>
-            <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a></li>
-        </ul>
-        <div class="nav-section-label">Account</div>
-        <ul class="nav">
-            <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
-            <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
-        </ul>
-        <div class="sidebar-footer">
-            <div class="user-chip">
-                <div class="user-avatar">S</div>
-                <div class="user-meta"><strong>Student</strong><span>Welcome back</span></div>
+    <div class="app" id="app">
+        <aside class="app-sidebar">
+            <div class="brand">
+                <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
+                <div class="brand-name">StudyHub</div>
             </div>
-        </div>
-    </aside>
-
-    <div class="app-main">
-        <header class="topbar">
-            <div style="display:flex;align-items:center;gap:.75rem;">
-                <button class="menu-btn icon-btn" onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i class="fas fa-bars"></i></button>
-                <div class="topbar-title">
-                    <h1>Pomodoro Timer</h1>
-                    <p>Focus in sprints. Rest. Repeat.</p>
+            <div class="nav-section-label">Main</div>
+            <ul class="nav">
+                <li><a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                <li><a href="notes.html"><i class="fas fa-sticky-note"></i><span>My Notes</span></a></li>
+                <li><a href="assignments.html"><i class="fas fa-tasks"></i><span>Assignments</span></a></li>
+                <li><a href="timer.html" class="active"><i class="fas fa-hourglass-half"></i><span>Pomodoro
+                            Timer</span></a></li>
+            </ul>
+            <div class="nav-section-label">Insights</div>
+            <ul class="nav">
+                <li><a href="goals.html"><i class="fas fa-bullseye"></i><span>Goals</span></a></li>
+                <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a></li>
+                <li><a href="analytics.html"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
+            </ul>
+            <div class="nav-section-label">Account</div>
+            <ul class="nav">
+                <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+                <li><a href="#" onclick="logout(); return false;"><i
+                            class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-chip">
+                    <div class="user-avatar">S</div>
+                    <div class="user-meta"><strong>Student</strong><span>Welcome back</span></div>
                 </div>
             </div>
-        </header>
+        </aside>
 
-    <div class="timer-page">
-
-        <!-- Heading -->
-        <div class="page-heading">
-            <div>
-                <h1>Pomodoro <span>Timer</span></h1>
-                <p>Focus in sprints. Rest. Repeat. Build unstoppable study habits.</p>
-            </div>
-        </div>
-
-        <!-- Grid: main timer + sidebar -->
-        <div class="timer-grid">
-
-            <!-- ── Left: Timer card ──────────────────── -->
-            <div class="card" id="timerCard">
-
-                <!-- Mode tabs -->
-                <div class="mode-tabs" role="tablist">
-                    <button class="mode-tab active" data-mode="focus"       role="tab" onclick="switchMode('focus')">Focus</button>
-                    <button class="mode-tab"        data-mode="short-break" role="tab" onclick="switchMode('short-break')">Short Break</button>
-                    <button class="mode-tab"        data-mode="long-break"  role="tab" onclick="switchMode('long-break')">Long Break</button>
+        <div class="app-main">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:.75rem;">
+                    <button class="menu-btn icon-btn"
+                        onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i
+                            class="fas fa-bars"></i></button>
+                    <div class="topbar-title">
+                        <h1>Pomodoro Timer</h1>
+                        <p>Focus in sprints. Rest. Repeat.</p>
+                    </div>
                 </div>
+            </header>
 
-                <!-- Ring + clock -->
-                <div class="ring-wrapper">
-                    <div class="ring-container" id="ringContainer">
+            <div class="timer-page">
 
-                        <!-- SVG ring -->
-                        <svg class="ring-svg" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">
-                            <circle class="ring-track"    cx="130" cy="130" r="124"/>
-                            <circle class="ring-progress idle-stroke" id="ringProgress"
-                                    cx="130" cy="130" r="124"
-                                    stroke-dasharray="779.2"
-                                    stroke-dashoffset="0"/>
-                        </svg>
-
-                        <!-- Moving dot -->
-                        <div class="ring-dot idle-dot" id="ringDot"></div>
-
-                        <!-- Centre text -->
-                        <div class="ring-centre">
-                            <div class="timer-display" id="timerDisplay">25:00</div>
-                            <div class="timer-mode-label" id="modeLabel">Focus Session</div>
-                        </div>
-                    </div>
-
-                    <!-- Break progress bar (under ring, hidden unless break mode) -->
-                    <div class="break-bar-wrap" id="breakBarWrap">
-                        <div class="break-bar-fill" id="breakBarFill" style="width:100%"></div>
-                    </div>
-
-                    <!-- Controls -->
-                    <div class="controls">
-                        <button class="btn-icon" id="btnReset" title="Reset" onclick="resetTimer()">
-                            <i class="fas fa-redo-alt"></i>
-                        </button>
-                        <button class="btn-play-pause" id="btnPlayPause" onclick="toggleTimer()">
-                            <i class="fas fa-play" id="playIcon"></i>
-                        </button>
-                        <button class="btn-icon" id="btnSkip" title="Skip to next" onclick="skipSession()">
-                            <i class="fas fa-forward-step"></i>
-                        </button>
-                    </div>
-
-                    <!-- Duration presets (focus mode only) -->
-                    <div class="duration-presets" id="durationPresets">
-                        <button class="preset-btn active" data-minutes="25" onclick="setPreset(25, this)">25 min</button>
-                        <button class="preset-btn"        data-minutes="30" onclick="setPreset(30, this)">30 min</button>
-                        <button class="preset-btn"        data-minutes="45" onclick="setPreset(45, this)">45 min</button>
-                        <button class="preset-btn"        data-minutes="60" onclick="setPreset(60, this)">60 min</button>
+                <!-- Heading -->
+                <div class="page-heading">
+                    <div>
+                        <h1>Pomodoro <span>Timer</span></h1>
+                        <p>Focus in sprints. Rest. Repeat. Build unstoppable study habits.</p>
                     </div>
                 </div>
 
-            </div><!-- /timer card -->
+                <!-- Grid: main timer + sidebar -->
+                <div class="timer-grid">
 
-            <!-- ── Right: Sidebar ────────────────────── -->
-            <div class="sidebar-stack">
+                    <!-- ── Left: Timer card ──────────────────── -->
+                    <div class="card" id="timerCard">
 
-                <!-- Stats card -->
-                <div class="card">
-                    <div class="card-title"><i class="fas fa-chart-line"></i> Your Stats</div>
-                    <div class="stats-row">
-                        <div class="stat-block accent-amber">
-                            <div class="stat-label">Today</div>
-                            <div class="stat-value" id="statToday">—</div>
-                            <div class="stat-sub">study time</div>
+                        <!-- Mode tabs -->
+                        <div class="mode-tabs" role="tablist">
+                            <button class="mode-tab active" data-mode="focus" role="tab"
+                                onclick="switchMode('focus')">Focus</button>
+                            <button class="mode-tab" data-mode="short-break" role="tab"
+                                onclick="switchMode('short-break')">Short Break</button>
+                            <button class="mode-tab" data-mode="long-break" role="tab"
+                                onclick="switchMode('long-break')">Long Break</button>
                         </div>
-                        <div class="stat-block">
-                            <div class="stat-label">Sessions</div>
-                            <div class="stat-value" id="statSessions">—</div>
-                            <div class="stat-sub">total</div>
-                        </div>
-                        <div class="stat-block accent-teal">
-                            <div class="stat-label">All Time</div>
-                            <div class="stat-value" id="statTotal">—</div>
-                            <div class="stat-sub">hours studied</div>
-                        </div>
-                        <div class="stat-block">
-                            <div class="stat-label">Streak</div>
-                            <div class="stat-value" id="statStreak">—</div>
-                            <div class="stat-sub">this session</div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Recent sessions card -->
-                <div class="card">
-                    <div class="card-title"><i class="fas fa-history"></i> Recent Sessions</div>
-                    <ul class="session-log" id="sessionLog">
-                        <li class="session-empty">
-                            <i class="fas fa-clock"></i>
-                            No sessions yet. Start your first timer!
-                        </li>
-                    </ul>
-                </div>
+                        <!-- Ring + clock -->
+                        <div class="ring-wrapper">
+                            <div class="ring-container" id="ringContainer">
 
-            </div><!-- /sidebar -->
+                                <!-- SVG ring -->
+                                <svg class="ring-svg" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">
+                                    <circle class="ring-track" cx="130" cy="130" r="124" />
+                                    <circle class="ring-progress idle-stroke" id="ringProgress" cx="130" cy="130"
+                                        r="124" stroke-dasharray="779.2" stroke-dashoffset="0" />
+                                </svg>
 
-        </div><!-- /timer-grid -->
-    </div><!-- /timer-page -->
-    </div><!-- /.app-main -->
-</div><!-- /.app -->
+                                <!-- Moving dot -->
+                                <div class="ring-dot idle-dot" id="ringDot"></div>
+
+                                <!-- Centre text -->
+                                <div class="ring-centre">
+                                    <div class="timer-display" id="timerDisplay">25:00</div>
+                                    <div class="timer-mode-label" id="modeLabel">Focus Session</div>
+                                </div>
+                            </div>
+
+                            <!-- Break progress bar (under ring, hidden unless break mode) -->
+                            <div class="break-bar-wrap" id="breakBarWrap">
+                                <div class="break-bar-fill" id="breakBarFill" style="width:100%"></div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="controls">
+                                <button class="btn-icon" id="btnReset" title="Reset" onclick="resetTimer()">
+                                    <i class="fas fa-redo-alt"></i>
+                                </button>
+                                <button class="btn-play-pause" id="btnPlayPause" onclick="toggleTimer()">
+                                    <i class="fas fa-play" id="playIcon"></i>
+                                </button>
+                                <button class="btn-icon" id="btnSkip" title="Skip to next" onclick="skipSession()">
+                                    <i class="fas fa-forward-step"></i>
+                                </button>
+                            </div>
+
+                            <!-- Duration presets (focus mode only) -->
+                            <div class="duration-presets" id="durationPresets">
+                                <button class="preset-btn active" data-minutes="25" onclick="setPreset(25, this)">25
+                                    min</button>
+                                <button class="preset-btn" data-minutes="30" onclick="setPreset(30, this)">30
+                                    min</button>
+                                <button class="preset-btn" data-minutes="45" onclick="setPreset(45, this)">45
+                                    min</button>
+                                <button class="preset-btn" data-minutes="60" onclick="setPreset(60, this)">60
+                                    min</button>
+                            </div>
+                        </div>
+
+                    </div><!-- /timer card -->
+
+                    <!-- ── Right: Sidebar ────────────────────── -->
+                    <div class="sidebar-stack">
+
+                        <!-- Stats card -->
+                        <div class="card">
+                            <div class="card-title"><i class="fas fa-chart-line"></i> Your Stats</div>
+                            <div class="stats-row">
+                                <div class="stat-block accent-amber">
+                                    <div class="stat-label">Today</div>
+                                    <div class="stat-value" id="statToday">—</div>
+                                    <div class="stat-sub">study time</div>
+                                </div>
+                                <div class="stat-block">
+                                    <div class="stat-label">Sessions</div>
+                                    <div class="stat-value" id="statSessions">—</div>
+                                    <div class="stat-sub">total</div>
+                                </div>
+                                <div class="stat-block accent-teal">
+                                    <div class="stat-label">All Time</div>
+                                    <div class="stat-value" id="statTotal">—</div>
+                                    <div class="stat-sub">hours studied</div>
+                                </div>
+                                <div class="stat-block">
+                                    <div class="stat-label">Streak</div>
+                                    <div class="stat-value" id="statStreak">—</div>
+                                    <div class="stat-sub">this session</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent sessions card -->
+                        <div class="card">
+                            <div class="card-title"><i class="fas fa-history"></i> Recent Sessions</div>
+                            <ul class="session-log" id="sessionLog">
+                                <li class="session-empty">
+                                    <i class="fas fa-clock"></i>
+                                    No sessions yet. Start your first timer!
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div><!-- /sidebar -->
+
+                </div><!-- /timer-grid -->
+            </div><!-- /timer-page -->
+        </div><!-- /.app-main -->
+    </div><!-- /.app -->
 
     <script src="../assets/js/timer.js"></script>
 </body>
+
 </html>
