@@ -6,7 +6,6 @@ include "check_auth.php";
 
 header('Content-Type: application/json');
 
-// Check if email exists in session
 if (!isset($_SESSION['email'])) {
     echo json_encode([
         "success" => false,
@@ -17,7 +16,6 @@ if (!isset($_SESSION['email'])) {
 
 $email = $_SESSION['email'];
 
-// Use prepared statement (SAFE)
 $stmt = $conn->prepare("SELECT name FROM students WHERE email = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
