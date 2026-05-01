@@ -21,7 +21,8 @@ if (!$student_id) {
 // Calculate read_time based on updated text (180 wpm)
 $read_time = 0;
 if (!empty($note_text)) {
-    $word_count = str_word_count($note_text);
+    // Robust word count for special characters/UTF-8
+    $word_count = count(preg_split('/\s+/u', $note_text, -1, PREG_SPLIT_NO_EMPTY));
     // Use 180 wpm for better granularity: ~1-180 words=1min, 181-360=2min, etc
     $read_time = max(1, ceil($word_count / 180));
 }
