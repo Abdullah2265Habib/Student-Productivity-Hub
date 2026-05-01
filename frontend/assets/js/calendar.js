@@ -1,361 +1,235 @@
-/* ============================================
-   calendar.js  –  Student Productivity Hub
-   ============================================ */
+fetch("../../backend/check_auth.php")
+    .then(r => r.text())
+    .then(t => { if (t.trim() === "unauthorized") window.location = "login.html"; });
 
 const API = '../../backend';
 
-/* ── State ─────────────────────────────────── */
-let allGoals = [];
-let currentMonth = new Date();
-let selectedDate = null;
+let currentDate     = new Date();
+let allGoals        = [];
+let allHolidays     = [];
+let selectedDateStr = null;
 
-/* ── DOM Refs ──────────────────────────────── */
-const monthYear = document.getElementById('monthYear');
-const calendarGrid = document.getElementById('calendarGrid');
-const prevMonthBtn = document.getElementById('prevMonth');
-const nextMonthBtn = document.getElementById('nextMonth');
-const todayBtn = document.getElementById('todayBtn');
+const MONTHS = ['January','February','March','April','May','June',
+                'July','August','September','October','November','December'];
 
-const sidebar = document.querySelector('.sidebar');
-const sidebarTitle = document.getElementById('sidebarTitle');
-const sidebarContent = document.getElementById('sidebarContent');
-const closeSidebarBtn = document.getElementById('closeSidebar');
-
-const goalModalOverlay = document.getElementById('goalModalOverlay');
-const closeModalBtn = document.getElementById('closeModal');
-const goalModalTitle = document.getElementById('goalModalTitle');
-const goalModalBody = document.getElementById('goalModalBody');
-const editGoalBtn = document.getElementById('editGoalBtn');
-const viewGoalsPageBtn = document.getElementById('viewGoalsPageBtn');
-
-/* ══════════════════════════════════════════════
-   INIT
-   ══════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
-    loadGoals();
     bindEvents();
-    renderCalendar();
+    Promise.all([loadGoals(), loadHolidays()]).then(() => renderCalendar());
 });
 
-/* ── Event Binding ──────────────────────────── */
 function bindEvents() {
-    prevMonthBtn.addEventListener('click', () => {
-        currentMonth.setMonth(currentMonth.getMonth() - 1);
-        renderCalendar();
-    });
-
-    nextMonthBtn.addEventListener('click', () => {
-        currentMonth.setMonth(currentMonth.getMonth() + 1);
-        renderCalendar();
-    });
-
-    todayBtn.addEventListener('click', () => {
-        currentMonth = new Date();
-        renderCalendar();
-    });
-
-    closeSidebarBtn.addEventListener('click', closeSidebar);
-    closeModalBtn.addEventListener('click', () => closeModal(goalModalOverlay));
-
-    goalModalOverlay.addEventListener('click', (e) => {
-        if (e.target === goalModalOverlay) closeModal(goalModalOverlay);
-    });
-
-    editGoalBtn.addEventListener('click', () => {
-        window.location = 'goals.html';
-    });
-
-    viewGoalsPageBtn.addEventListener('click', () => {
-        window.location = 'goals.html';
-    });
+    document.getElementById('prevBtn').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth()-1); renderCalendar(); });
+    document.getElementById('nextBtn').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth()+1); renderCalendar(); });
+    document.getElementById('todayBtn').addEventListener('click', () => { currentDate = new Date(); renderCalendar(); selectDate(toDateStr(new Date())); });
+    document.getElementById('addHolidayBtn').addEventListener('click', () => openModal(null));
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('cancelModal').addEventListener('click', closeModal);
+    document.getElementById('saveHolidayBtn').addEventListener('click', saveHoliday);
+    document.getElementById('holidayModal').addEventListener('click', e => { if (e.target === document.getElementById('holidayModal')) closeModal(); });
 }
 
-/* ══════════════════════════════════════════════
-   LOAD GOALS
-   ══════════════════════════════════════════════ */
 function loadGoals() {
-    fetch(`${API}/get_goals.php`, { credentials: 'include' })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success && data.goals) {
-                allGoals = data.goals;
-                renderCalendar();
-            }
-        })
-        .catch(err => console.error('Error loading goals:', err));
+    return fetch(`${API}/get_goals.php`, { credentials: 'include' })
+        .then(r => r.json())
+        .then(d => { if (d.success) allGoals = d.goals || []; })
+        .catch(() => {});
 }
 
-/* ══════════════════════════════════════════════
-   RENDER CALENDAR
-   ══════════════════════════════════════════════ */
+function loadHolidays() {
+    return fetch(`${API}/get_holidays.php`, { credentials: 'include' })
+        .then(r => r.json())
+        .then(d => { if (d.success) allHolidays = d.holidays || []; renderHolidaysOverview(); })
+        .catch(() => { renderHolidaysOverview(); });
+}
+
+function buildMaps() {
+    const goalMap = {}, holidayMap = {};
+    allGoals.forEach(g => { (goalMap[g.target_date] = goalMap[g.target_date] || []).push(g); });
+    allHolidays.forEach(h => { (holidayMap[h.date] = holidayMap[h.date] || []).push(h); });
+    return { goalMap, holidayMap };
+}
+
 function renderCalendar() {
-    const year = currentMonth.getFullYear();
-    const month = currentMonth.getMonth();
+    const year = currentDate.getFullYear(), month = currentDate.getMonth();
+    document.getElementById('monthLabel').textContent = MONTHS[month] + ' ' + year;
 
-    // Update month display
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                       'July', 'August', 'September', 'October', 'November', 'December'];
-    monthYear.textContent = monthNames[month] + ' ' + year;
-
-    // Get first day and days in month
-    const firstDay = new Date(year, month, 1).getDay();
+    const firstDay    = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const daysInPrevMonth = new Date(year, month, 0).getDate();
+    const prevDays    = new Date(year, month, 0).getDate();
+    const today       = toDateStr(new Date());
+    const { goalMap, holidayMap } = buildMaps();
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
 
-    calendarGrid.innerHTML = '';
-
-    // Previous month days
-    for (let i = firstDay - 1; i >= 0; i--) {
-        const day = daysInPrevMonth - i;
-        const cell = createCalendarDay(day, month - 1, year, true);
-        calendarGrid.appendChild(cell);
-    }
-
-    // Current month days
-    for (let day = 1; day <= daysInMonth; day++) {
-        const cell = createCalendarDay(day, month, year, false);
-        calendarGrid.appendChild(cell);
-    }
-
-    // Next month days
-    const totalCells = calendarGrid.children.length;
-    const remainingCells = 42 - totalCells; // 6 weeks * 7 days
-    for (let day = 1; day <= remainingCells; day++) {
-        const cell = createCalendarDay(day, month + 1, year, true);
-        calendarGrid.appendChild(cell);
-    }
+    for (let i = firstDay-1; i >= 0; i--)
+        grid.appendChild(buildDay(prevDays-i, month-1, year, true, goalMap, holidayMap, today));
+    for (let d = 1; d <= daysInMonth; d++)
+        grid.appendChild(buildDay(d, month, year, false, goalMap, holidayMap, today));
+    const rem = (grid.children.length <= 35 ? 35 : 42) - grid.children.length;
+    for (let d = 1; d <= rem; d++)
+        grid.appendChild(buildDay(d, month+1, year, true, goalMap, holidayMap, today));
 }
 
-/* ── Create Calendar Day ─────────────────────– */
-function createCalendarDay(day, month, year, isOtherMonth) {
+function buildDay(day, month, year, isOther, goalMap, holidayMap, today) {
+    let ry = year, rm = month;
+    if (month < 0)  { rm = 11; ry = year - 1; }
+    if (month > 11) { rm = 0;  ry = year + 1; }
+    const dateStr = toDateStrParts(ry, rm+1, day);
+
     const cell = document.createElement('div');
-    cell.className = 'calendar-day';
+    cell.className = 'day';
+    if (isOther) { cell.classList.add('other-month'); cell.innerHTML = `<div class="day-num">${day}</div>`; return cell; }
 
-    if (isOtherMonth) {
-        cell.classList.add('other-month');
-        cell.textContent = day;
-        return cell;
-    }
+    if (dateStr === today)           cell.classList.add('today');
+    if (dateStr === selectedDateStr) cell.classList.add('selected');
 
-    // Check if today
-    const today = new Date();
-    const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-    if (isToday) {
-        cell.classList.add('today');
-    }
+    const goalsHere    = goalMap[dateStr]    || [];
+    const holidaysHere = holidayMap[dateStr] || [];
+    if (goalsHere.length)    cell.classList.add('has-goal');
+    if (holidaysHere.length) cell.classList.add('has-holiday');
 
-    // Get goals for this date
-    const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
-    const goalsOnDate = allGoals.filter(goal => goal.target_date === dateStr);
+    const numEl = document.createElement('div');
+    numEl.className = 'day-num';
+    numEl.textContent = day;
+    cell.appendChild(numEl);
 
-    // Create day content
-    const dayNumber = document.createElement('div');
-    dayNumber.className = 'day-number';
-    dayNumber.textContent = day;
-    cell.appendChild(dayNumber);
-
-    if (goalsOnDate.length > 0) {
-        cell.classList.add('has-goals');
-        
-        if (goalsOnDate.length > 1) {
-            cell.classList.add('multiple-goals');
-        }
-
-        // Add goal indicators
-        const indicators = document.createElement('div');
-        indicators.className = 'goal-indicators';
-        
-        goalsOnDate.slice(0, 3).forEach(goal => {
-            const dot = document.createElement('div');
-            dot.className = 'goal-dot';
-            dot.style.backgroundColor = getPriorityColor(goal.priority);
-            dot.title = goal.goal_text;
-            indicators.appendChild(dot);
+    if (goalsHere.length || holidaysHere.length) {
+        const dotsEl = document.createElement('div');
+        dotsEl.className = 'day-dots';
+        goalsHere.slice(0,2).forEach(g => {
+            const d = document.createElement('div');
+            d.className = 'dot';
+            d.style.background = g.priority==='high' ? 'var(--danger)' : g.priority==='medium' ? 'var(--accent)' : 'var(--success)';
+            dotsEl.appendChild(d);
         });
-
-        if (goalsOnDate.length > 3) {
-            const more = document.createElement('div');
-            more.className = 'goal-more';
-            more.textContent = '+' + (goalsOnDate.length - 3);
-            indicators.appendChild(more);
-        }
-
-        cell.appendChild(indicators);
-
-        // Click handler
-        cell.addEventListener('click', () => {
-            selectedDate = dateStr;
-            showGoalsForDate(dateStr, goalsOnDate, day, monthNames[month]);
-        });
-    } else {
-        cell.classList.add('no-goals');
+        if (goalsHere.length > 2) { const m=document.createElement('div'); m.className='dot more'; m.textContent='+'+(goalsHere.length-2); dotsEl.appendChild(m); }
+        holidaysHere.forEach(() => { const d=document.createElement('div'); d.className='dot'; d.style.background='var(--holiday)'; dotsEl.appendChild(d); });
+        cell.appendChild(dotsEl);
     }
 
+    cell.addEventListener('click', () => selectDate(dateStr));
     return cell;
 }
 
-/* ══════════════════════════════════════════════
-   SHOW GOALS FOR DATE
-   ══════════════════════════════════════════════ */
-function showGoalsForDate(dateStr, goals, day, monthName) {
-    selectedDate = dateStr;
+function selectDate(dateStr) {
+    selectedDateStr = dateStr;
+    renderCalendar();
+    const [y, m, d] = dateStr.split('-');
+    document.getElementById('detailTitle').textContent = `${MONTHS[parseInt(m)-1]} ${parseInt(d)}, ${y}`;
 
-    // Update sidebar
-    sidebarTitle.textContent = monthName + ' ' + day;
-    
-    if (goals.length === 0) {
-        sidebarContent.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-check-circle"></i>
-                <p>No goals on this date</p>
-            </div>
-        `;
-    } else {
-        sidebarContent.innerHTML = goals.map(goal => createGoalSummary(goal)).join('');
-        
-        // Add click handlers to summary cards
-        document.querySelectorAll('.goal-summary').forEach(card => {
-            card.addEventListener('click', (e) => {
-                if (e.target.closest('.goal-summary')) {
-                    const goalId = card.dataset.goalId;
-                    showGoalDetail(parseInt(goalId));
-                }
-            });
+    const { goalMap, holidayMap } = buildMaps();
+    const goalsHere    = goalMap[dateStr]    || [];
+    const holidaysHere = holidayMap[dateStr] || [];
+    const statusLabel  = { pending:'Pending', in_progress:'In Progress', completed:'Completed' };
+
+    let html = '';
+    if (holidaysHere.length) {
+        html += `<div class="section-label" style="color:var(--holiday)"><i class="fas fa-umbrella-beach"></i> Holidays</div>`;
+        holidaysHere.forEach(h => {
+            html += `<div class="holiday-item">
+                <button class="holiday-del" onclick="deleteHoliday(${h.id})"><i class="fas fa-trash"></i></button>
+                <h4>${escHtml(h.name)}</h4>
+                ${h.description ? `<p>${escHtml(h.description)}</p>` : ''}
+            </div>`;
         });
     }
-
-    // Show sidebar on mobile
-    sidebar.classList.add('open');
-}
-
-/* ── Create Goal Summary ─────────────────────– */
-function createGoalSummary(goal) {
-    const statusClass = goal.status === 'completed' ? 'completed' :
-                       goal.status === 'in_progress' ? 'in_progress' : 'pending';
-    
-    const priorityClass = goal.priority === 'high' ? 'high' :
-                         goal.priority === 'medium' ? 'medium' : 'low';
-
-    const today = new Date();
-    const goalDate = new Date(goal.target_date);
-    const isOverdue = goalDate < today && goal.status !== 'completed';
-
-    return `
-        <div class="goal-summary" data-goal-id="${goal.id}">
-            <div class="goal-summary-header">
-                <h4>${escapeHtml(goal.goal_text)}</h4>
-                <span class="priority-badge priority-${priorityClass}">${goal.priority}</span>
-            </div>
-            <div class="goal-summary-meta">
-                <span class="status-badge status-${statusClass}">${formatStatus(goal.status)}</span>
-                ${isOverdue ? '<span class="overdue-badge">Overdue</span>' : ''}
-            </div>
-        </div>
-    `;
-}
-
-/* ══════════════════════════════════════════════
-   SHOW GOAL DETAIL
-   ══════════════════════════════════════════════ */
-function showGoalDetail(goalId) {
-    const goal = allGoals.find(g => g.id === goalId);
-    if (!goal) return;
-
-    const goalDate = new Date(goal.target_date);
-    const dateStr = goalDate.toLocaleDateString('en-US', 
-        { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-    const today = new Date();
-    const isOverdue = goalDate < today && goal.status !== 'completed';
-    const daysLeft = Math.ceil((goalDate - today) / (1000 * 60 * 60 * 24));
-
-    goalModalTitle.textContent = escapeHtml(goal.goal_text);
-    goalModalBody.innerHTML = `
-        <div class="goal-detail">
-            <div class="detail-section">
-                <h4>Status</h4>
-                <span class="status-badge status-${goal.status}">${formatStatus(goal.status)}</span>
-            </div>
-
-            <div class="detail-section">
-                <h4>Priority</h4>
-                <span class="priority-badge priority-${goal.priority}">${goal.priority.toUpperCase()}</span>
-            </div>
-
-            <div class="detail-section">
-                <h4>Target Date</h4>
-                <div class="date-info">
-                    <p>${dateStr}</p>
-                    ${isOverdue ? 
-                        `<p class="text-danger"><i class="fas fa-exclamation-circle"></i> Overdue</p>` :
-                        `<p class="text-info"><i class="fas fa-clock"></i> ${daysLeft} days left</p>`
-                    }
+    if (goalsHere.length) {
+        if (html) html += '<div style="height:.5rem"></div>';
+        html += `<div class="section-label" style="color:var(--primary)"><i class="fas fa-bullseye"></i> Goals</div>`;
+        goalsHere.forEach(g => {
+            html += `<div class="goal-item priority-${g.priority}">
+                <h4>${escHtml(g.goal_text)}</h4>
+                <div class="goal-badges">
+                    <span class="badge ${g.priority}">${g.priority}</span>
+                    <span class="badge ${g.status}">${statusLabel[g.status]||g.status}</span>
                 </div>
-            </div>
+            </div>`;
+        });
+    }
+    if (!html) html = `<div class="empty-panel"><i class="fas fa-calendar-xmark"></i><p style="font-size:.8rem">Nothing on this date.</p></div>`;
 
-            <div class="detail-section">
-                <h4>Timeline</h4>
-                <div class="timeline">
-                    <div class="timeline-item">
-                        <span class="timeline-label">Created</span>
-                        <span class="timeline-date">${new Date(goal.created_at).toLocaleDateString()}</span>
-                    </div>
-                    <div class="timeline-item active">
-                        <span class="timeline-label">Target</span>
-                        <span class="timeline-date">${goal.target_date}</span>
-                    </div>
-                    <div class="timeline-item">
-                        <span class="timeline-label">Last Updated</span>
-                        <span class="timeline-date">${new Date(goal.updated_at).toLocaleDateString()}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    openModal(goalModalOverlay);
+    html += `<button class="nudge-btn" onclick="openModal('${dateStr}')"><i class="fas fa-plus"></i> Add holiday on this date</button>`;
+    document.getElementById('detailBody').innerHTML = html;
 }
 
-/* ══════════════════════════════════════════════
-   HELPER FUNCTIONS
-   ══════════════════════════════════════════════ */
-function formatStatus(status) {
-    const map = {
-        'pending': 'Pending',
-        'in_progress': 'In Progress',
-        'completed': 'Completed'
-    };
-    return map[status] || status;
+function renderHolidaysOverview() {
+    const el = document.getElementById('holidaysOverview');
+    if (!allHolidays.length) { el.innerHTML = `<div class="empty-panel"><i class="fas fa-sun"></i><p style="font-size:.8rem">No holidays added yet</p></div>`; return; }
+    const sorted = [...allHolidays].sort((a,b) => a.date.localeCompare(b.date));
+    el.innerHTML = sorted.map(h => {
+        const [y,m,d] = h.date.split('-');
+        const lbl = `${MONTHS[parseInt(m)-1].slice(0,3)} ${parseInt(d)}, ${y}`;
+        return `<div class="holiday-item" style="margin-bottom:.4rem">
+            <button class="holiday-del" onclick="deleteHoliday(${h.id})"><i class="fas fa-trash"></i></button>
+            <h4>${escHtml(h.name)}</h4>
+            <p>${lbl}${h.description ? ' · '+escHtml(h.description).slice(0,50)+(h.description.length>50?'…':'') : ''}</p>
+        </div>`;
+    }).join('');
 }
 
-function getPriorityColor(priority) {
-    const colors = {
-        'high': '#ef4444',
-        'medium': '#f59e0b',
-        'low': '#10b981'
-    };
-    return colors[priority] || '#6366f1';
+function openModal(prefillDate) {
+    document.getElementById('holidayName').value = '';
+    document.getElementById('holidayDesc').value = '';
+    document.getElementById('holidayDate').value = prefillDate || '';
+    ['holidayDate','holidayName'].forEach(id => document.getElementById(id).classList.remove('error'));
+    document.getElementById('holidayModal').classList.add('open');
+    setTimeout(() => document.getElementById('holidayName').focus(), 100);
 }
 
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+function closeModal() { document.getElementById('holidayModal').classList.remove('open'); }
+
+async function saveHoliday() {
+    const date = document.getElementById('holidayDate').value;
+    const name = document.getElementById('holidayName').value.trim();
+    const desc = document.getElementById('holidayDesc').value.trim();
+    document.getElementById('holidayDate').classList.toggle('error', !date);
+    document.getElementById('holidayName').classList.toggle('error', !name);
+    if (!date || !name) return;
+
+    const btn = document.getElementById('saveHolidayBtn');
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+    try {
+        const fd = new FormData();
+        fd.append('date', date); fd.append('name', name); fd.append('description', desc);
+        const res  = await fetch(`${API}/add_holiday.php`, { method:'POST', body:fd, credentials:'include' });
+        const data = await res.json();
+        if (data.success) {
+            allHolidays.push(data.holiday);
+            closeModal(); renderCalendar(); renderHolidaysOverview();
+            if (selectedDateStr === date) selectDate(date);
+            showToast('Holiday added!', 'success');
+        } else {
+            showToast(data.message || 'Failed to save holiday', 'error');
+        }
+    } catch { showToast('Network error', 'error'); }
+    finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-check"></i> Save Holiday'; }
 }
 
-function closeSidebar() {
-    sidebar.classList.remove('open');
+async function deleteHoliday(id) {
+    if (!confirm('Delete this holiday?')) return;
+    try {
+        const fd = new FormData(); fd.append('id', id);
+        const res  = await fetch(`${API}/delete_holiday.php`, { method:'POST', body:fd, credentials:'include' });
+        const data = await res.json();
+        if (data.success) {
+            allHolidays = allHolidays.filter(h => h.id != id);
+            renderCalendar(); renderHolidaysOverview();
+            if (selectedDateStr) selectDate(selectedDateStr);
+            showToast('Holiday deleted', 'success');
+        } else { showToast(data.message || 'Could not delete', 'error'); }
+    } catch { showToast('Network error', 'error'); }
 }
 
-function openModal(modal) {
-    modal.style.display = 'flex';
+function showToast(msg, type='success') {
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}"></i> ${msg}`;
+    document.getElementById('toastWrap').appendChild(t);
+    setTimeout(() => { t.style.transition='opacity .3s'; t.style.opacity='0'; setTimeout(()=>t.remove(),320); }, 3000);
 }
 
-function closeModal(modal) {
-    modal.style.display = 'none';
-}
-
-function logout() {
-    fetch(`${API}/logout.php`, { credentials: 'include' })
-        .then(() => { window.location = '../../index.html'; });
-}
+function toDateStr(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function toDateStrParts(y,m,d) { return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function logout() { fetch(`${API}/logout.php`,{credentials:'include'}).then(()=>window.location.href='../../index.html'); }
