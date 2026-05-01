@@ -5,10 +5,11 @@
 const API = '../../backend';
 
 /* ── State ─────────────────────────────────── */
-let allNotes     = [];
-let notesLoaded  = false;
-let activeFilter = 'all';
-let droppedFile  = null;   // holds the drag-and-dropped File object
+let allNotes       = [];
+let notesLoaded    = false;
+let activeFilter   = 'all';
+let droppedFile    = null;   // holds the drag-and-dropped File object
+let selectedNoteId = null;   // currently viewed note in the right panel
 
 /* ── DOM Refs ──────────────────────────────── */
 const notesGrid        = document.getElementById('notesGrid');
@@ -44,6 +45,16 @@ const closeTextModal   = document.getElementById('closeTextModal');
 const closePdfModal    = document.getElementById('closePdfModal');
 const filterTabs       = document.querySelectorAll('.filter-tab');
 const toastContainer   = document.getElementById('toastContainer');
+
+const notesViewer      = document.getElementById('notesViewer');
+const viewerEmpty      = document.getElementById('viewerEmpty');
+const viewerContent    = document.getElementById('viewerContent');
+const viewerBadge      = document.getElementById('viewerBadge');
+const viewerDate       = document.getElementById('viewerDate');
+const viewerReadTime   = document.getElementById('viewerReadTime');
+const viewerBody       = document.getElementById('viewerBody');
+const viewerEditBtn    = document.getElementById('viewerEditBtn');
+const viewerDeleteBtn  = document.getElementById('viewerDeleteBtn');
 
 const editModalOverlay  = document.getElementById('editModalOverlay');
 const editNoteForm      = document.getElementById('editNoteForm');
@@ -149,13 +160,7 @@ function noteCard(note) {
            </div>`
         : `<p>${escHtml(note.note_text)}</p>`;
 
-    const action = isPdf
-        ? `<a class="view-btn"
-              href="../../${note.file_path}"
-              target="_blank">
-              Open PDF <i class="fas fa-external-link-alt"></i>
-           </a>`
-        : `<button class="view-btn" onclick="expandNote(${note.id})">
+    const action = `<button class="view-btn" onclick="selectNote(${note.id}); event.stopPropagation();">
               View <i class="fas fa-chevron-right"></i>
            </button>`;
     const editAction = isPdf
@@ -167,7 +172,7 @@ function noteCard(note) {
            </button>`;
  
     return `
-    <div class="note-card" data-id="${note.id}" data-type="${isPdf ? 'pdf' : 'text'}">
+    <div class="note-card" data-id="${note.id}" data-type="${isPdf ? 'pdf' : 'text'}" onclick="selectNote(${note.id})">
         <div class="note-card-header">
             ${badge}
             <div class="note-card-menu">
@@ -260,7 +265,7 @@ searchInput.addEventListener('input', () => { if (notesLoaded) applyFilters(); }
 function bindEvents() {
     if (loadNotesBtn) {
         loadNotesBtn.addEventListener('click', () => {
-            notesSection.style.display = 'block';
+            notesSection.style.display = 'flex';
             loadNotes();
         });
     }
@@ -365,6 +370,21 @@ function bindEvents() {
         if (editPdfFileInput.files[0]) handleEditPdfFileSelect(editPdfFileInput.files[0]);
     });
     editPdfRemoveFile.addEventListener('click', clearEditPdfFileChosen);
+
+    /* ── Viewer panel buttons ── */
+    viewerEditBtn.addEventListener('click', () => {
+        if (!selectedNoteId) return;
+        const note = allNotes.find(n => n.id == selectedNoteId);
+        if (!note) return;
+        if (note.file_path) {
+            openEditPdfModal(selectedNoteId);
+        } else {
+            openEditModal(selectedNoteId);
+        }
+    });
+    viewerDeleteBtn.addEventListener('click', () => {
+        if (selectedNoteId) deleteNote(selectedNoteId);
+    });
 }
 
 
@@ -458,7 +478,7 @@ async function submitTextNote(e) {
         if (data.success) {
             allNotes.unshift(data.note);
             notesLoaded = true;
-            notesSection.style.display = 'block';
+            notesSection.style.display = 'flex';
             applyFilters();
             closeModal();
             showToast('Text note saved!', 'success');
@@ -510,7 +530,7 @@ async function submitPdfNote(e) {
         if (data.success) {
             allNotes.unshift(data.note);
             notesLoaded = true;
-            notesSection.style.display = 'block';
+            notesSection.style.display = 'flex';
             applyFilters();
             closeModal();
             showToast('PDF note uploaded!', 'success');
@@ -579,6 +599,8 @@ async function submitEditNote(e) {
                 allNotes[idx].read_time = data.read_time || 1;
             }
             applyFilters();
+            /* refresh viewer if this note is currently displayed */
+            if (selectedNoteId == id) selectNote(id);
             closeEditModalFn();
             showToast('Note updated!', 'success');
         } else {
@@ -694,6 +716,12 @@ async function deleteNote(id) {
         catch { showToast('Server error: ' + raw.slice(0, 80), 'error'); return; }
 
         if (data.success) {
+            /* reset viewer if we just deleted the displayed note */
+            if (selectedNoteId == id) {
+                selectedNoteId = null;
+                viewerContent.style.display = 'none';
+                viewerEmpty.style.display   = 'grid';
+            }
             allNotes = allNotes.filter(n => n.id != id);
             applyFilters();
             showToast('Note deleted.', 'success');
@@ -705,34 +733,66 @@ async function deleteNote(id) {
     }
 }
 
-/* ── Expand text note ────────────────────────── */
-function expandNote(id) {
+/* ── Select / view note in the right panel ───── */
+function selectNote(id) {
     const note = allNotes.find(n => n.id == id);
     if (!note) return;
 
-    const overlay = document.createElement('div');
-    overlay.style.cssText = `
-        position:fixed;inset:0;background:rgba(15,23,42,.6);
-        display:flex;align-items:center;justify-content:center;
-        z-index:900;padding:1.5rem;backdrop-filter:blur(4px);`;
-    overlay.innerHTML = `
-        <div style="background:#fff;border-radius:1rem;max-width:600px;width:100%;
-                    max-height:80vh;overflow-y:auto;
-                    box-shadow:0 20px 60px rgba(0,0,0,.2);">
-            <div style="padding:1.2rem 1.5rem;border-bottom:1px solid #e2e8f0;
-                        display:flex;justify-content:space-between;align-items:center;">
-                <h3 style="font-size:1.1rem;color:#1e293b">
-                    <i class="fas fa-sticky-note" style="color:#6366f1;margin-right:.5rem"></i>Note
-                </h3>
-                <button onclick="this.closest('[style]').remove()"
-                        style="background:none;border:none;font-size:1.3rem;
-                               cursor:pointer;color:#64748b;line-height:1;">×</button>
+    selectedNoteId = id;
+    const isPdf = !!note.file_path;
+
+    /* highlight the selected card in the list */
+    document.querySelectorAll('.note-card').forEach(c => c.classList.remove('selected'));
+    const card = document.querySelector(`.note-card[data-id="${id}"]`);
+    if (card) card.classList.add('selected');
+
+    /* badge */
+    if (isPdf) {
+        viewerBadge.className = 'pill danger';
+        viewerBadge.innerHTML = '<i class="fas fa-file-pdf"></i> PDF';
+    } else {
+        viewerBadge.className = 'pill info';
+        viewerBadge.innerHTML = '<i class="fas fa-align-left"></i> Text';
+    }
+
+    /* date */
+    viewerDate.innerHTML = `<i class="fas fa-clock"></i> ${formatDate(note.created_at)}`;
+
+    /* read time */
+    if (note.read_time) {
+        viewerReadTime.style.display = 'inline-flex';
+        viewerReadTime.innerHTML = `<i class="fas fa-book-open"></i> ${note.read_time} min read`;
+    } else {
+        viewerReadTime.style.display = 'none';
+    }
+
+    /* edit button label */
+    if (isPdf) {
+        viewerEditBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Replace PDF';
+    } else {
+        viewerEditBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+    }
+
+    /* body content */
+    if (isPdf) {
+        const pdfUrl = `../../${note.file_path}`;
+        viewerBody.innerHTML = `
+            <div class="viewer-pdf-header">
+                <i class="fas fa-file-pdf"></i>
+                <span>${escHtml(pdfName(note.file_path))}</span>
+                <a href="${pdfUrl}" target="_blank" class="btn" style="margin-left:auto;">
+                    <i class="fas fa-external-link-alt"></i> Open in New Tab
+                </a>
             </div>
-            <div style="padding:1.5rem;font-size:.96rem;line-height:1.75;
-                        color:#334155;white-space:pre-wrap;">${escHtml(note.note_text)}</div>
-        </div>`;
-    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
-    document.body.appendChild(overlay);
+            <iframe class="viewer-pdf-frame" src="${pdfUrl}" title="PDF Preview"></iframe>`;
+    } else {
+        viewerBody.innerHTML = `
+            <div class="viewer-text-content">${escHtml(note.note_text)}</div>`;
+    }
+
+    /* show viewer, hide empty state */
+    viewerEmpty.style.display   = 'none';
+    viewerContent.style.display = 'flex';
 }
 
 /* ── Utilities ───────────────────────────────── */
