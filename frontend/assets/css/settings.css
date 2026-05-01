@@ -198,7 +198,8 @@
 
 .toggle-password {
     position: absolute;
-    right: 0.5rem;
+    top: 0.5rem;
+    right: 1.7rem;
     background: transparent;
     border: none;
     color: var(--text-3);
