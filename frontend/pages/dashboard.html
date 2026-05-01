@@ -421,6 +421,162 @@
             animation: pulse 1.4s ease-in-out infinite;
         }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+        /* ==========================================
+           Calendar Styles
+           ========================================== */
+        .calendar-container {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            max-width: 100%;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-month {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .calendar-nav button {
+            background: var(--light-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-dark);
+            width: 2rem;
+            height: 2rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-nav button:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .weekday {
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            padding: 0.5rem 0;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            position: relative;
+            transition: all 0.3s ease;
+            background: white;
+            color: var(--text-dark);
+        }
+
+        .calendar-day:hover {
+            border-color: var(--primary-color);
+            background: var(--light-bg);
+        }
+
+        .calendar-day.other-month {
+            color: var(--text-light);
+            background: #f5f5f5;
+        }
+
+        .calendar-day.today {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            border-color: var(--primary-color);
+        }
+
+        .calendar-day.has-goal {
+            border: 2px solid var(--accent-color);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+            font-weight: 600;
+        }
+
+        .calendar-day.has-goal::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            width: 4px;
+            height: 4px;
+            background: var(--accent-color);
+            border-radius: 50%;
+        }
+
+        .calendar-legend {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.goal {
+            background: var(--accent-color);
+        }
+
+        .legend-dot.today {
+            background: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .calendar-day {
+                font-size: 0.8rem;
+            }
+
+            .weekday {
+                font-size: 0.8rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -429,7 +585,7 @@
         .then(res=>res.text())
         .then(res=>{
             if(res=="unauthorized"){
-                window.location = "login.html";
+                window.location = "login.html?redirect=dashboard.html";
             }
         });
     </script>
@@ -604,9 +760,15 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="goals.html">
                             <i class="fas fa-bullseye"></i>
                             <span>Goals</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="calendar.html">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Calendar</span>
                         </a>
                     </li>
                     <li>
@@ -716,6 +878,164 @@
                             <div class="skel-line" style="width:70px;height:22px;border-radius:2rem;"></div>
                         </li>
                     </ul>
+                </div>
+
+                <!-- Goals Calendar -->
+                <div class="content-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-calendar"></i>
+                        Goals Calendar
+                    </h3>
+                    <div class="calendar-container">
+                        <div class="calendar-header">
+                            <div class="calendar-month" id="calendarMonth">January 2026</div>
+                            <div class="calendar-nav">
+                                <button id="prevMonth" title="Previous month">&lt;</button>
+                                <button id="todayBtn" title="Go to today">Today</button>
+                                <button id="nextMonth" title="Next month">&gt;</button>
+                            </div>
+                        </div>
+
+                        <div class="weekdays">
+                            <div class="weekday">Sun</div>
+                            <div class="weekday">Mon</div>
+                            <div class="weekday">Tue</div>
+                            <div class="weekday">Wed</div>
+                            <div class="weekday">Thu</div>
+                            <div class="weekday">Fri</div>
+                            <div class="weekday">Sat</div>
+                        </div>
+}
+
+        /* ══════════════════════════════════════════════
+           GOALS CALENDAR INITIALIZATION
+           ══════════════════════════════════════════════ */
+        let currentCalendarDate = new Date();
+        let goalDates = {};
+
+        function loadGoalsForCalendar() {
+            fetch("../../backend/get_goals.php", { credentials: 'include' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.goals) {
+                        goalDates = {};
+                        data.goals.forEach(goal => {
+                            const dateStr = goal.target_date;
+                            if (!goalDates[dateStr]) {
+                                goalDates[dateStr] = [];
+                            }
+                            goalDates[dateStr].push(goal);
+                        });
+                        renderCalendar();
+                    }
+                })
+                .catch(err => console.error('Error loading goals:', err));
+        }
+
+        function renderCalendar() {
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            
+            // Update month display
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('calendarMonth').textContent = monthNames[month] + ' ' + year;
+
+            // Get first day of month and number of days
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+            const calendarGrid = document.getElementById('calendarGrid');
+            calendarGrid.innerHTML = '';
+
+            // Previous month days
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const day = daysInPrevMonth - i;
+                const cell = createCalendarDay(day, month - 1, year, true);
+                calendarGrid.appendChild(cell);
+            }
+
+            // Current month days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = createCalendarDay(day, month, year, false);
+                calendarGrid.appendChild(cell);
+            }
+
+            // Next month days
+            const totalCells = calendarGrid.children.length;
+            const remainingCells = 42 - totalCells; // 6 weeks * 7 days
+            for (let day = 1; day <= remainingCells; day++) {
+                const cell = createCalendarDay(day, month + 1, year, true);
+                calendarGrid.appendChild(cell);
+            }
+        }
+
+        function createCalendarDay(day, month, year, isOtherMonth) {
+            const cell = document.createElement('div');
+            cell.className = 'calendar-day';
+            cell.textContent = day;
+
+            if (isOtherMonth) {
+                cell.classList.add('other-month');
+                return cell;
+            }
+
+            // Check if it's today
+            const today = new Date();
+            if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                cell.classList.add('today');
+            }
+
+            // Check if there are goals on this date
+            const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+            if (goalDates[dateStr] && goalDates[dateStr].length > 0) {
+                cell.classList.add('has-goal');
+                cell.title = goalDates[dateStr].map(g => g.goal_text).join('\n');
+                cell.addEventListener('click', () => {
+                    showGoalsSidebar(goalDates[dateStr], dateStr);
+                });
+            }
+
+            return cell;
+        }
+
+        function showGoalsSidebar(goals, dateStr) {
+            // Optional: Show a tooltip or navigate to goals page with filter
+            alert('Goals on ' + dateStr + ':\n' + goals.map(g => '• ' + g.goal_text).join('\n'));
+        }
+
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        document.getElementById('todayBtn').addEventListener('click', () => {
+            currentCalendarDate = new Date();
+            renderCalendar();
+        });
+
+        // Load goals calendar on page load
+        document.addEventListener('DOMContentLoaded', loadGoalsForCalendar);
+                                <!-- Generated by JavaScript -->
+                        </div>
+
+                        <div class="calendar-legend">
+                            <div class="legend-item">
+                                <div class="legend-dot goal"></div>
+                                <span>Goal Deadline</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot today"></div>
+                                <span>Today</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Upcoming Assignments -->

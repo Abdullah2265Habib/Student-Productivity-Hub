@@ -29,7 +29,10 @@ document.getElementById('login-form').addEventListener('submit', function (e) {
         .then(res => res.text())
         .then(msg => {
             if (msg.trim() === "success") {
-                window.location = "dashboard.html";
+                // Check if there's a redirect parameter in the URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirect = urlParams.get('redirect') || 'dashboard.html';
+                window.location = redirect;
             } else {
                 alert("Email is not registered or Password is incorrect");
             }

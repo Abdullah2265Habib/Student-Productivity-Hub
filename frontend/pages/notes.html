@@ -15,7 +15,7 @@
             .then(res=>res.text())
             .then(res=>{
                 if(res=="unauthorized"){
-                    window.location = "pages/login.html";
+                    window.location = "login.html?redirect=notes.html";
                 }
             });
 
