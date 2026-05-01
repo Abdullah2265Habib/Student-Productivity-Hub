@@ -5,19 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Goals Calendar – StudyHub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/app-shell.css">
     <link rel="stylesheet" href="../assets/css/calendar.css">
 </head>
 <body>
 
+<div class="app" id="app">
+    <aside class="app-sidebar">
+        <div class="brand">
+            <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
+            <div class="brand-name">StudyHub</div>
+        </div>
+        <div class="nav-section-label">Main</div>
+        <ul class="nav">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+            <li><a href="notes.html"><i class="fas fa-sticky-note"></i><span>My Notes</span></a></li>
+            <li><a href="assignments.html"><i class="fas fa-tasks"></i><span>Assignments</span></a></li>
+            <li><a href="timer.html"><i class="fas fa-hourglass-half"></i><span>Pomodoro Timer</span></a></li>
+        </ul>
+        <div class="nav-section-label">Insights</div>
+        <ul class="nav">
+            <li><a href="goals.html"><i class="fas fa-bullseye"></i><span>Goals</span></a></li>
+            <li><a href="calendar.html" class="active"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a></li>
+        </ul>
+        <div class="nav-section-label">Account</div>
+        <ul class="nav">
+            <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+            <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <div class="user-chip">
+                <div class="user-avatar">S</div>
+                <div class="user-meta"><strong>Student</strong><span>Welcome back</span></div>
+            </div>
+        </div>
+    </aside>
 
-
-<nav class="navbar">
-    <a href="dashboard.html" class="logo"><i class="fas fa-graduation-cap"></i> StudyHub</a>
-    <div class="nav-right">
-        <a href="dashboard.html" class="nav-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
-        <button class="nav-btn logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
-    </div>
-</nav>
+    <div class="app-main">
+        <header class="topbar">
+            <div style="display:flex;align-items:center;gap:.75rem;">
+                <button class="menu-btn icon-btn" onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i class="fas fa-bars"></i></button>
+                <div class="topbar-title">
+                    <h1>Goals Calendar</h1>
+                    <p>View deadlines, holidays and goals at a glance</p>
+                </div>
+            </div>
+        </header>
 
 <div class="page">
 
@@ -107,6 +140,8 @@
         </div>
     </div>
 </div>
+    </div><!-- /.app-main -->
+</div><!-- /.app -->
 
 <div class="toast-wrap" id="toastWrap"></div>
 
