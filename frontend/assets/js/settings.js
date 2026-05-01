@@ -54,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('mainAvatar').textContent = initial;
 
                 // Form Inputs
-                document.getElementById('updateName').value = name;
                 document.getElementById('updateEmail').value = email;
                 
                 // Member since (using created_at if available, else fallback)
