@@ -41,7 +41,10 @@
             <div class="sidebar-footer">
                 <div class="user-chip">
                     <div class="user-avatar">S</div>
-                    <div class="user-meta"><strong id="userName">Student</strong><span>Welcome back</span></div>
+                    <div class="user-meta">
+                        <strong id="userName">Student</strong>
+                        <span id="userRole">Welcome back</span>
+                    </div>
                 </div>
             </div>
         </aside>
@@ -174,6 +177,23 @@
     </div>
 
     <script src="../assets/js/assignments.js"></script>
+    <script>
+        fetch("../../backend/get_user.php", { credentials: 'include' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.user) {
+                    const name = data.user.name || 'Student';
+                    document.getElementById("userName").textContent = name;
+                    document.getElementById("userAvatar").textContent = name.trim().charAt(0).toUpperCase() || 'S';
+                    const hour = new Date().getHours();
+                    const greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+                    document.getElementById("greetTitle").innerHTML = `${greet}, ${name} 👋`;
+                    const today = new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                    document.getElementById("greetSub").textContent = today;
+                }
+            })
+            .catch(() => { });
+    </script>
 </body>
 
 </html>
