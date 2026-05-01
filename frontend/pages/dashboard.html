@@ -466,6 +466,11 @@
                 }
 
                 document.getElementById('statsTotalNotes').textContent = data.total_notes ?? '—';
+                document.getElementById('statsCompletedTasks').textContent = data.completed_tasks ?? '0';
+
+                document.getElementById('statsPendingTasks').textContent = data.pending_tasks ?? '0';
+
+                document.getElementById('statsStudyHours').textContent = (data.study_hours ?? 0) + 'h';
 
                 const list = document.getElementById('recentNotesList');
                 if (!data.recent_notes || data.recent_notes.length === 0) {
@@ -638,21 +643,21 @@
                     <div class="stat-card success">
                         <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
                         <div class="stat-meta">
-                            <div class="stat-value">—</div>
+                            <div class="stat-value" id="statsCompletedTasks">—</div>
                             <div class="stat-label">Completed Tasks</div>
                         </div>
                     </div>
                     <div class="stat-card accent">
                         <div class="stat-icon"><i class="fas fa-clock"></i></div>
                         <div class="stat-meta">
-                            <div class="stat-value">—</div>
+                            <div class="stat-value" id="statsStudyHours">—</div>
                             <div class="stat-label">Study Hours</div>
                         </div>
                     </div>
                     <div class="stat-card danger">
                         <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
                         <div class="stat-meta">
-                            <div class="stat-value">—</div>
+                            <div class="stat-value" id="statsPendingTasks">—</div>
                             <div class="stat-label">Pending Tasks</div>
                         </div>
                     </div>
