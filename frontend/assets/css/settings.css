@@ -1,0 +1,315 @@
+/* =====================================================
+   Settings Page Styles
+   ===================================================== */
+
+.settings-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .settings-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Settings Navigation ─────────────────────────── */
+.settings-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: calc(var(--topbar-h) + 1.5rem);
+}
+
+.settings-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border: none;
+    background: transparent;
+    color: var(--text-2);
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: var(--transition);
+}
+
+.settings-tab i {
+    width: 20px;
+    text-align: center;
+    color: var(--text-3);
+    transition: var(--transition);
+}
+
+.settings-tab:hover {
+    background: var(--surface-2);
+    color: var(--text);
+}
+
+.settings-tab.active {
+    background: var(--primary-50);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.settings-tab.active i {
+    color: var(--primary);
+}
+
+/* ── Settings Sections ───────────────────────────── */
+.settings-content {
+    min-width: 0;
+}
+
+.settings-section {
+    display: none;
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+.settings-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.section-desc {
+    color: var(--text-3);
+    font-size: 0.9rem;
+    margin-top: -0.5rem;
+    margin-bottom: 2rem;
+}
+
+/* ── Profile Header ──────────────────────────────── */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-soft));
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 2.5rem;
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    box-shadow: 0 8px 20px rgba(37,99,235,.2);
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.profile-info h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text);
+}
+
+.profile-info p {
+    margin: 0;
+    color: var(--text-2);
+    font-size: 0.95rem;
+}
+
+.member-since {
+    font-size: 0.8rem;
+    color: var(--text-3);
+    margin-top: 0.25rem;
+    background: var(--surface-2);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    width: fit-content;
+}
+
+/* ── Forms ───────────────────────────────────────── */
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 500px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon i:first-child {
+    position: absolute;
+    left: 1rem;
+    color: var(--text-3);
+    font-size: 0.95rem;
+}
+
+.input-with-icon input {
+    width: 100%;
+    padding: 0.85rem 1rem 0.85rem 2.5rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--surface);
+    transition: var(--transition);
+}
+
+.input-with-icon input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.toggle-password {
+    position: absolute;
+    right: 0.5rem;
+    background: transparent;
+    border: none;
+    color: var(--text-3);
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: var(--transition);
+}
+
+.toggle-password:hover {
+    color: var(--text);
+}
+
+.form-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0.5rem 0;
+}
+
+.form-actions {
+    margin-top: 1rem;
+}
+
+/* ── Password Requirements ───────────────────────── */
+.password-requirements {
+    background: var(--surface-2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-top: 0.5rem;
+}
+
+.password-requirements h4 {
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-2);
+}
+
+.password-requirements ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.password-requirements li {
+    font-size: 0.8rem;
+    color: var(--text-3);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.password-requirements li i {
+    font-size: 0.4rem;
+}
+
+.password-requirements li.valid {
+    color: var(--success);
+}
+
+/* ── Toast Notifications ─────────────────────────── */
+.toast-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.toast {
+    background: var(--surface);
+    border-left: 4px solid var(--primary);
+    box-shadow: var(--shadow-md);
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 300px;
+    transform: translateX(120%);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast.success { border-left-color: var(--success); }
+.toast.success i { color: var(--success); }
+.toast.error { border-left-color: var(--danger); }
+.toast.error i { color: var(--danger); }
+
+.toast-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.toast-content strong {
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.toast-content p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-2);
+}
