@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -415,12 +416,24 @@
                 padding: 1rem;
             }
         }
+
         .skel-line {
             background: #e2e8f0;
             border-radius: 4px;
             animation: pulse 1.4s ease-in-out infinite;
         }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .4
+            }
+        }
 
         /* ==========================================
            Calendar Styles
@@ -579,91 +592,92 @@
         }
     </style>
 </head>
+
 <body>
     <script>
         fetch("../../backend/check_auth.php")
-        .then(res=>res.text())
-        .then(res=>{
-            if(res=="unauthorized"){
-                window.location = "login.html?redirect=dashboard.html";
-            }
-        });
+            .then(res => res.text())
+            .then(res => {
+                if (res == "unauthorized") {
+                    window.location = "login.html?redirect=dashboard.html";
+                }
+            });
     </script>
-<script>
+    <script>
 
-    fetch("../../backend/dashboard_stats.php", { credentials: 'include' })
-        .then(res => res.text())
-        .then(text => {
-            let data;
-            try { data = JSON.parse(text); }
-            catch { 
-                document.getElementById('statsTotalNotes').textContent = '—';
-                document.getElementById('recentNotesList').innerHTML = '<li><p style="color:#64748b;padding:.5rem">Could not load notes.</p></li>';
-                return;
-            }
+        fetch("../../backend/dashboard_stats.php", { credentials: 'include' })
+            .then(res => res.text())
+            .then(text => {
+                let data;
+                try { data = JSON.parse(text); }
+                catch {
+                    document.getElementById('statsTotalNotes').textContent = '—';
+                    document.getElementById('recentNotesList').innerHTML = '<li><p style="color:#64748b;padding:.5rem">Could not load notes.</p></li>';
+                    return;
+                }
 
-            // Total Notes card
-            document.getElementById('statsTotalNotes').textContent = data.total_notes ?? '—';
+                // Total Notes card
+                document.getElementById('statsTotalNotes').textContent = data.total_notes ?? '—';
 
-            // Recent Notes list
-            const list = document.getElementById('recentNotesList');
-            if (!data.recent_notes || data.recent_notes.length === 0) {
-                list.innerHTML = '<li><p style="color:#64748b;padding:.5rem">No notes yet. <a href="notes.html">Create one →</a></p></li>';
-                return;
-            }
-            list.innerHTML = data.recent_notes.map(note => {
-                const isPdf  = !!note.file_path;
-                const label  = isPdf
-                    ? note.file_path.split('/').pop().replace(/^\d+_/, '')
-                    : (note.note_text || '').substring(0, 60) + ((note.note_text || '').length > 60 ? '…' : '');
-                const badge  = isPdf
-                    ? '<span class="item-badge urgent">PDF</span>'
-                    : `<span class="item-badge">${note.read_time ? note.read_time + ' min read' : 'Text'}</span>`;
-                const date   = note.updated_at
-                    ? new Date(note.updated_at.replace(' ', 'T'))
-                        .toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                    : '';
-                return `<li>
+                // Recent Notes list
+                const list = document.getElementById('recentNotesList');
+                if (!data.recent_notes || data.recent_notes.length === 0) {
+                    list.innerHTML = '<li><p style="color:#64748b;padding:.5rem">No notes yet. <a href="notes.html">Create one →</a></p></li>';
+                    return;
+                }
+                list.innerHTML = data.recent_notes.map(note => {
+                    const isPdf = !!note.file_path;
+                    const label = isPdf
+                        ? note.file_path.split('/').pop().replace(/^\d+_/, '')
+                        : (note.note_text || '').substring(0, 60) + ((note.note_text || '').length > 60 ? '…' : '');
+                    const badge = isPdf
+                        ? '<span class="item-badge urgent">PDF</span>'
+                        : `<span class="item-badge">${note.read_time ? note.read_time + ' min read' : 'Text'}</span>`;
+                    const date = note.updated_at
+                        ? new Date(note.updated_at.replace(' ', 'T'))
+                            .toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        : '';
+                    return `<li>
                     <div class="item-info">
-                        <h4>${label.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</h4>
+                        <h4>${label.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</h4>
                         <p>Last updated: ${date}</p>
                     </div>
                     ${badge}
                 </li>`;
-            }).join('');
+                }).join('');
 
-            // Render Assignments
-            if (data.upcoming_assignments) {
-                renderAssignments(data.upcoming_assignments);
+                // Render Assignments
+                if (data.upcoming_assignments) {
+                    renderAssignments(data.upcoming_assignments);
+                }
+            })
+            .catch(() => {
+                document.getElementById('statsTotalNotes').textContent = '—';
+            });
+
+        function renderAssignments(assignments) {
+            const container = document.getElementById('dashboardAssignments');
+
+            if (!assignments || assignments.length === 0) {
+                container.innerHTML = '<li style="text-align: center; padding: 2rem; color: var(--text-light);">No upcoming assignments</li>';
+                return;
             }
-        })
-        .catch(() => {
-            document.getElementById('statsTotalNotes').textContent = '—';
-        });
 
-    function renderAssignments(assignments) {
-        const container = document.getElementById('dashboardAssignments');
-        
-        if (!assignments || assignments.length === 0) {
-            container.innerHTML = '<li style="text-align: center; padding: 2rem; color: var(--text-light);">No upcoming assignments</li>';
-            return;
-        }
+            const statusBadgeMap = {
+                'submitted': 'completed',
+                'in_progress': '',
+                'pending': '',
+                'due_soon': 'urgent',
+                'missed': 'urgent',
+                'late': 'urgent'
+            };
 
-        const statusBadgeMap = {
-            'submitted': 'completed',
-            'in_progress': '',
-            'pending': '',
-            'due_soon': 'urgent',
-            'missed': 'urgent',
-            'late': 'urgent'
-        };
+            container.innerHTML = assignments.map(assignment => {
+                const badgeClass = statusBadgeMap[assignment.status] || '';
+                const badgeText = assignment.badge || formatStatusBadge(assignment.status);
+                const dueDate = formatDueDate(assignment.due_date);
 
-        container.innerHTML = assignments.map(assignment => {
-            const badgeClass = statusBadgeMap[assignment.status] || '';
-            const badgeText = assignment.badge || formatStatusBadge(assignment.status);
-            const dueDate = formatDueDate(assignment.due_date);
-            
-            return `
+                return `
                 <li>
                     <div class="item-info">
                         <h4>${escapeHtml(assignment.course_name)}</h4>
@@ -672,43 +686,43 @@
                     <span class="item-badge ${badgeClass}">${badgeText}</span>
                 </li>
             `;
-        }).join('');
-    }
-
-    function formatStatusBadge(status) {
-        const map = {
-            'pending': 'Pending',
-            'in_progress': 'In Progress',
-            'submitted': 'Submitted',
-            'due_soon': 'Due Soon',
-            'late': 'Late',
-            'missed': 'Missed'
-        };
-        return map[status] || status;
-    }
-
-    function formatDueDate(dateString) {
-        const date = new Date(dateString);
-        const today = new Date();
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        
-        if (date.toDateString() === today.toDateString()) {
-            return 'Today';
-        } else if (date.toDateString() === tomorrow.toDateString()) {
-            return 'Tomorrow';
-        } else {
-            const options = { month: 'short', day: 'numeric', year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined };
-            return date.toLocaleDateString('en-US', options);
+            }).join('');
         }
-    }
 
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-</script>
+        function formatStatusBadge(status) {
+            const map = {
+                'pending': 'Pending',
+                'in_progress': 'In Progress',
+                'submitted': 'Submitted',
+                'due_soon': 'Due Soon',
+                'late': 'Late',
+                'missed': 'Missed'
+            };
+            return map[status] || status;
+        }
+
+        function formatDueDate(dateString) {
+            const date = new Date(dateString);
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            if (date.toDateString() === today.toDateString()) {
+                return 'Today';
+            } else if (date.toDateString() === tomorrow.toDateString()) {
+                return 'Tomorrow';
+            } else {
+                const options = { month: 'short', day: 'numeric', year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined };
+                return date.toLocaleDateString('en-US', options);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="container">
@@ -717,7 +731,21 @@
                 <span>StudyHub</span>
             </div>
             <div class="user-menu">
-                <span class="user-name">Welcome, Student!</span>
+                <span id="userName" class="user-name">Welcome, Student!</span>
+                <script>
+                    fetch("../../backend/get_user.php", { 
+                        credentials: 'include' 
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success && data.user) {
+                            document.getElementById("userName").textContent = "Welcome, " + data.user.name + "!";
+                        }
+                    })
+                    .catch(() => {
+                        document.getElementById("userName").textContent = "Welcome!";
+                    });
+                </script>
                 <button class="logout-btn" onclick="logout()">Logout</button>
             </div>
         </div>
@@ -905,166 +933,169 @@
                             <div class="weekday">Fri</div>
                             <div class="weekday">Sat</div>
                         </div>
-}
+                        <div class="calendar-grid" id="calendarGrid"></div>
+                        <script>
+                            /* ══════════════════════════════════════════════
+                               GOALS CALENDAR INITIALIZATION
+                               ══════════════════════════════════════════════ */
+                            let currentCalendarDate = new Date();
+                            let goalDates = {};
 
-        /* ══════════════════════════════════════════════
-           GOALS CALENDAR INITIALIZATION
-           ══════════════════════════════════════════════ */
-        let currentCalendarDate = new Date();
-        let goalDates = {};
-
-        function loadGoalsForCalendar() {
-            fetch("../../backend/get_goals.php", { credentials: 'include' })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success && data.goals) {
-                        goalDates = {};
-                        data.goals.forEach(goal => {
-                            const dateStr = goal.target_date;
-                            if (!goalDates[dateStr]) {
-                                goalDates[dateStr] = [];
+                            function loadGoalsForCalendar() {
+                                fetch("../../backend/get_goals.php", { credentials: 'include' })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data.success && data.goals) {
+                                            goalDates = {};
+                                            data.goals.forEach(goal => {
+                                                const dateStr = goal.target_date;
+                                                if (!goalDates[dateStr]) {
+                                                    goalDates[dateStr] = [];
+                                                }
+                                                goalDates[dateStr].push(goal);
+                                            });
+                                            renderCalendar();
+                                        }
+                                    })
+                                    .catch(err => console.error('Error loading goals:', err));
                             }
-                            goalDates[dateStr].push(goal);
-                        });
-                        renderCalendar();
-                    }
-                })
-                .catch(err => console.error('Error loading goals:', err));
-        }
 
-        function renderCalendar() {
-            const year = currentCalendarDate.getFullYear();
-            const month = currentCalendarDate.getMonth();
-            
-            // Update month display
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                              'July', 'August', 'September', 'October', 'November', 'December'];
-            document.getElementById('calendarMonth').textContent = monthNames[month] + ' ' + year;
+                            function renderCalendar() {
+                                const year = currentCalendarDate.getFullYear();
+                                const month = currentCalendarDate.getMonth();
 
-            // Get first day of month and number of days
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const daysInPrevMonth = new Date(year, month, 0).getDate();
+                                // Update month display
+                                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                                    'July', 'August', 'September', 'October', 'November', 'December'];
+                                document.getElementById('calendarMonth').textContent = monthNames[month] + ' ' + year;
 
-            const calendarGrid = document.getElementById('calendarGrid');
-            calendarGrid.innerHTML = '';
+                                // Get first day of month and number of days
+                                const firstDay = new Date(year, month, 1).getDay();
+                                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                                const daysInPrevMonth = new Date(year, month, 0).getDate();
 
-            // Previous month days
-            for (let i = firstDay - 1; i >= 0; i--) {
-                const day = daysInPrevMonth - i;
-                const cell = createCalendarDay(day, month - 1, year, true);
-                calendarGrid.appendChild(cell);
-            }
+                                const calendarGrid = document.getElementById('calendarGrid');
+                                calendarGrid.innerHTML = '';
 
-            // Current month days
-            for (let day = 1; day <= daysInMonth; day++) {
-                const cell = createCalendarDay(day, month, year, false);
-                calendarGrid.appendChild(cell);
-            }
+                                // Previous month days
+                                for (let i = firstDay - 1; i >= 0; i--) {
+                                    const day = daysInPrevMonth - i;
+                                    const cell = createCalendarDay(day, month - 1, year, true);
+                                    calendarGrid.appendChild(cell);
+                                }
 
-            // Next month days
-            const totalCells = calendarGrid.children.length;
-            const remainingCells = 42 - totalCells; // 6 weeks * 7 days
-            for (let day = 1; day <= remainingCells; day++) {
-                const cell = createCalendarDay(day, month + 1, year, true);
-                calendarGrid.appendChild(cell);
-            }
-        }
+                                // Current month days
+                                for (let day = 1; day <= daysInMonth; day++) {
+                                    const cell = createCalendarDay(day, month, year, false);
+                                    calendarGrid.appendChild(cell);
+                                }
 
-        function createCalendarDay(day, month, year, isOtherMonth) {
-            const cell = document.createElement('div');
-            cell.className = 'calendar-day';
-            cell.textContent = day;
+                                // Next month days
+                                const totalCells = calendarGrid.children.length;
+                                const remainingCells = 42 - totalCells; // 6 weeks * 7 days
+                                for (let day = 1; day <= remainingCells; day++) {
+                                    const cell = createCalendarDay(day, month + 1, year, true);
+                                    calendarGrid.appendChild(cell);
+                                }
+                            }
 
-            if (isOtherMonth) {
-                cell.classList.add('other-month');
-                return cell;
-            }
+                            function createCalendarDay(day, month, year, isOtherMonth) {
+                                const cell = document.createElement('div');
+                                cell.className = 'calendar-day';
+                                cell.textContent = day;
 
-            // Check if it's today
-            const today = new Date();
-            if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-                cell.classList.add('today');
-            }
+                                if (isOtherMonth) {
+                                    cell.classList.add('other-month');
+                                    return cell;
+                                }
 
-            // Check if there are goals on this date
-            const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
-            if (goalDates[dateStr] && goalDates[dateStr].length > 0) {
-                cell.classList.add('has-goal');
-                cell.title = goalDates[dateStr].map(g => g.goal_text).join('\n');
-                cell.addEventListener('click', () => {
-                    showGoalsSidebar(goalDates[dateStr], dateStr);
-                });
-            }
+                                // Check if it's today
+                                const today = new Date();
+                                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                                    cell.classList.add('today');
+                                }
 
-            return cell;
-        }
+                                // Check if there are goals on this date
+                                const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+                                if (goalDates[dateStr] && goalDates[dateStr].length > 0) {
+                                    cell.classList.add('has-goal');
+                                    cell.title = goalDates[dateStr].map(g => g.goal_text).join('\n');
+                                    cell.addEventListener('click', () => {
+                                        showGoalsSidebar(goalDates[dateStr], dateStr);
+                                    });
+                                }
 
-        function showGoalsSidebar(goals, dateStr) {
-            // Optional: Show a tooltip or navigate to goals page with filter
-            alert('Goals on ' + dateStr + ':\n' + goals.map(g => '• ' + g.goal_text).join('\n'));
-        }
+                                return cell;
+                            }
 
-        document.getElementById('prevMonth').addEventListener('click', () => {
-            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
-            renderCalendar();
-        });
+                            function showGoalsSidebar(goals, dateStr) {
+                                // Optional: Show a tooltip or navigate to goals page with filter
+                                alert('Goals on ' + dateStr + ':\n' + goals.map(g => '• ' + g.goal_text).join('\n'));
+                            }
 
-        document.getElementById('nextMonth').addEventListener('click', () => {
-            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
-            renderCalendar();
-        });
+                            document.getElementById('prevMonth').addEventListener('click', () => {
+                                currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+                                renderCalendar();
+                            });
 
-        document.getElementById('todayBtn').addEventListener('click', () => {
-            currentCalendarDate = new Date();
-            renderCalendar();
-        });
+                            document.getElementById('nextMonth').addEventListener('click', () => {
+                                currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+                                renderCalendar();
+                            });
 
-        // Load goals calendar on page load
-        document.addEventListener('DOMContentLoaded', loadGoalsForCalendar);
-                                <!-- Generated by JavaScript -->
+                            document.getElementById('todayBtn').addEventListener('click', () => {
+                                currentCalendarDate = new Date();
+                                renderCalendar();
+                            });
+
+                            // Load goals calendar on page load
+                            document.addEventListener('DOMContentLoaded', loadGoalsForCalendar);
+                        </script>
+                    </div>
+
+                    <div class="calendar-legend">
+                        <div class="legend-item">
+                            <div class="legend-dot goal"></div>
+                            <span>Goal Deadline</span>
                         </div>
-
-                        <div class="calendar-legend">
-                            <div class="legend-item">
-                                <div class="legend-dot goal"></div>
-                                <span>Goal Deadline</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-dot today"></div>
-                                <span>Today</span>
-                            </div>
+                        <div class="legend-item">
+                            <div class="legend-dot today"></div>
+                            <span>Today</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Upcoming Assignments -->
-                <div class="content-section">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                        <h3 class="section-title" style="margin-bottom: 0;">
-                            <i class="fas fa-calendar-alt"></i>
-                            Upcoming Assignments
-                        </h3>
-                        <a href="assignments.html" style="color: var(--primary-color); text-decoration: none; font-size: 0.9rem; font-weight: 600;">View All →</a>
-                    </div>
-                    <ul class="item-list" id="dashboardAssignments">
-                        <li style="text-align: center; padding: 2rem; color: var(--text-light);">
-                            <i class="fas fa-spinner fa-spin"></i> Loading assignments...
-                        </li>
-                    </ul>
-                </div>
-            </main>
         </div>
+
+        <!-- Upcoming Assignments -->
+        <div class="content-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 class="section-title" style="margin-bottom: 0;">
+                    <i class="fas fa-calendar-alt"></i>
+                    Upcoming Assignments
+                </h3>
+                <a href="assignments.html"
+                    style="color: var(--primary-color); text-decoration: none; font-size: 0.9rem; font-weight: 600;">View
+                    All →</a>
+            </div>
+            <ul class="item-list" id="dashboardAssignments">
+                <li style="text-align: center; padding: 2rem; color: var(--text-light);">
+                    <i class="fas fa-spinner fa-spin"></i> Loading assignments...
+                </li>
+            </ul>
+        </div>
+        </main>
+    </div>
     </div>
 
     <script>
-        function logout(){
+        function logout() {
             fetch("../../backend/logout.php")
-            .then(()=>{
-            window.location = "../../index.html";
-        });
+                .then(() => {
+                    window.location = "../../index.html";
+                });
 
-}
-</script>
+        }
+    </script>
 </body>
+
 </html>
