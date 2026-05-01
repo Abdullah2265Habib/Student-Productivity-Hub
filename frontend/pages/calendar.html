@@ -3,141 +3,551 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goals Calendar – Student Productivity Hub</title>
-    <meta name="description" content="View all your goals in a beautiful calendar with timelines and summaries.">
+    <title>Goals Calendar – StudyHub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/calendar.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #1e293b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --accent: #f59e0b;
+            --holiday: #ec4899;
+            --bg: #f1f5f9;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --muted: #64748b;
+            --shadow: 0 2px 8px rgba(0,0,0,.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,.12);
+            --radius: 10px;
+            --t: .2s ease;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            font-size: 14px;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: .75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 200;
+        }
+        .logo { display:flex; align-items:center; gap:.5rem; color:#fff; font-size:1.1rem; font-weight:700; text-decoration:none; }
+        .nav-right { display:flex; align-items:center; gap:.75rem; }
+        .nav-btn {
+            color:rgba(255,255,255,.88); background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.25);
+            padding:.4rem .9rem; border-radius:6px; font-size:.82rem; font-weight:500; cursor:pointer;
+            text-decoration:none; display:flex; align-items:center; gap:.4rem; transition:var(--t); font-family:inherit;
+        }
+        .nav-btn:hover { background:rgba(255,255,255,.25); color:#fff; }
+        .nav-btn.logout { background:rgba(239,68,68,.7); border-color:transparent; }
+        .nav-btn.logout:hover { background:var(--danger); }
+
+        .page {
+            max-width:1100px; margin:1.5rem auto; padding:0 1.25rem 2rem;
+            display:grid; grid-template-columns:1fr 300px; gap:1.25rem; align-items:start;
+        }
+
+        .card { background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid var(--border); overflow:hidden; }
+
+        .card-head {
+            padding:.85rem 1.1rem; border-bottom:1px solid var(--border);
+            display:flex; justify-content:space-between; align-items:center; background:#fafbfc;
+        }
+        .card-head h3 { font-size:.92rem; font-weight:700; color:var(--text); display:flex; align-items:center; gap:.5rem; }
+        .card-head h3 i { color:var(--primary); font-size:.85rem; }
+
+        .cal-nav { display:flex; align-items:center; gap:.5rem; }
+        .cal-nav-btn {
+            background:var(--bg); border:1px solid var(--border); color:var(--text);
+            width:28px; height:28px; border-radius:6px; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; font-size:.8rem; transition:var(--t);
+        }
+        .cal-nav-btn:hover { background:var(--primary); color:#fff; border-color:var(--primary); }
+        .month-label { font-size:.95rem; font-weight:700; color:var(--text); min-width:130px; text-align:center; font-family:'DM Mono',monospace; }
+        .today-btn { background:var(--primary); color:#fff; border:none; padding:.3rem .7rem; border-radius:5px; font-size:.75rem; font-weight:600; cursor:pointer; transition:var(--t); font-family:inherit; }
+        .today-btn:hover { background:var(--primary-dark); }
+
+        .cal-body { padding:.75rem; }
+        .weekdays { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin-bottom:4px; }
+        .weekday { text-align:center; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:.3rem 0; }
+        .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+
+        .day {
+            aspect-ratio:1; border-radius:7px; border:1.5px solid transparent;
+            display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+            padding:4px 2px 2px; cursor:pointer; transition:all var(--t);
+            position:relative; min-height:48px; background:#fafbfc;
+        }
+        .day:hover { border-color:var(--primary); background:rgba(99,102,241,.05); transform:scale(1.04); }
+        .day.other-month { opacity:.35; cursor:default; pointer-events:none; }
+        .day.today { background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border-color:var(--primary-dark); }
+        .day.today .day-num { color:#fff; font-weight:800; }
+        .day.today:hover { transform:scale(1.04); }
+        .day.has-goal { border-color:var(--accent); background:rgba(245,158,11,.07); }
+        .day.has-goal.today { border-color:var(--primary-dark); }
+        .day.has-holiday { border-color:var(--holiday); background:rgba(236,72,153,.07); }
+        .day.has-goal.has-holiday { border-color:var(--primary); background:rgba(99,102,241,.07); }
+        .day.selected { box-shadow:0 0 0 2px var(--primary); border-color:var(--primary); }
+        .day.today.selected { box-shadow:0 0 0 2px #fff,0 0 0 4px var(--primary); }
+
+        .day-num { font-size:.78rem; font-weight:600; color:var(--text); line-height:1; margin-bottom:2px; }
+        .day-dots { display:flex; gap:2px; align-items:center; flex-wrap:wrap; justify-content:center; }
+        .dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+        .dot.more { font-size:.55rem; font-weight:700; color:var(--muted); width:auto; height:auto; }
+
+        .legend { display:flex; gap:1rem; padding:.6rem .75rem; border-top:1px solid var(--border); background:#fafbfc; flex-wrap:wrap; }
+        .legend-item { display:flex; align-items:center; gap:.35rem; font-size:.72rem; color:var(--muted); font-weight:500; }
+        .leg-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+        .leg-box { width:12px; height:12px; border-radius:3px; border:2px solid; flex-shrink:0; }
+
+        .sidebar-panel { display:flex; flex-direction:column; gap:1rem; }
+        .panel-body { padding:.75rem 1rem; }
+
+        .empty-panel { text-align:center; padding:1.5rem 1rem; color:var(--muted); }
+        .empty-panel i { font-size:1.8rem; color:var(--border); display:block; margin-bottom:.5rem; }
+
+        .goal-item {
+            padding:.6rem .8rem; border-radius:7px; border-left:3px solid var(--border);
+            background:var(--bg); margin-bottom:.5rem; transition:var(--t);
+        }
+        .goal-item:last-child { margin-bottom:0; }
+        .goal-item:hover { border-left-color:var(--primary); background:rgba(99,102,241,.05); }
+        .goal-item.priority-high  { border-left-color:var(--danger); }
+        .goal-item.priority-medium { border-left-color:var(--accent); }
+        .goal-item.priority-low   { border-left-color:var(--success); }
+        .goal-item h4 { font-size:.82rem; font-weight:600; color:var(--text); margin-bottom:.3rem; }
+
+        .goal-badges { display:flex; gap:.3rem; flex-wrap:wrap; }
+        .badge { font-size:.67rem; font-weight:700; padding:.15rem .5rem; border-radius:3px; text-transform:uppercase; letter-spacing:.04em; }
+        .badge.pending    { background:#e0e7ff; color:var(--primary); }
+        .badge.in_progress { background:#fef3c7; color:#92400e; }
+        .badge.completed  { background:#dcfce7; color:#15803d; }
+        .badge.high   { background:#fee2e2; color:var(--danger); }
+        .badge.medium { background:#fef3c7; color:#92400e; }
+        .badge.low    { background:#dcfce7; color:#15803d; }
+
+        .holiday-item {
+            padding:.6rem .8rem; border-radius:7px; border-left:3px solid var(--holiday);
+            background:rgba(236,72,153,.05); margin-bottom:.5rem; position:relative;
+        }
+        .holiday-item:last-child { margin-bottom:0; }
+        .holiday-item h4 { font-size:.82rem; font-weight:600; color:var(--text); margin-bottom:.15rem; padding-right:1.5rem; }
+        .holiday-item p  { font-size:.75rem; color:var(--muted); }
+        .holiday-del {
+            position:absolute; top:.5rem; right:.5rem;
+            background:none; border:none; color:var(--muted); cursor:pointer;
+            font-size:.75rem; padding:.15rem .3rem; border-radius:4px; transition:var(--t);
+        }
+        .holiday-del:hover { color:var(--danger); background:#fee2e2; }
+
+        .section-label { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.45rem; display:flex; align-items:center; gap:.3rem; }
+
+        .add-holiday-btn {
+            width:100%; background:linear-gradient(135deg,var(--holiday),#be185d); color:#fff; border:none;
+            padding:.55rem; border-radius:7px; font-size:.8rem; font-weight:600; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; gap:.4rem; transition:var(--t); font-family:inherit;
+        }
+        .add-holiday-btn:hover { opacity:.88; transform:translateY(-1px); }
+        .add-holiday-btn:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+
+        .modal-bg { display:none; position:fixed; inset:0; background:rgba(15,23,42,.5); backdrop-filter:blur(3px); z-index:1000; align-items:center; justify-content:center; }
+        .modal-bg.open { display:flex; }
+        .modal-box { background:#fff; border-radius:var(--radius); box-shadow:var(--shadow-lg); width:90%; max-width:400px; animation:popIn .25s cubic-bezier(.34,1.56,.64,1); }
+        @keyframes popIn { from{transform:scale(.9);opacity:0} to{transform:scale(1);opacity:1} }
+        .modal-head { padding:.9rem 1.1rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+        .modal-head h3 { font-size:.95rem; font-weight:700; }
+        .modal-close { background:none; border:none; color:var(--muted); cursor:pointer; font-size:1.2rem; line-height:1; transition:var(--t); }
+        .modal-close:hover { color:var(--text); }
+        .modal-body { padding:1rem 1.1rem; }
+        .modal-foot { padding:.75rem 1.1rem; border-top:1px solid var(--border); display:flex; gap:.6rem; justify-content:flex-end; }
+
+        .form-group { margin-bottom:.9rem; }
+        .form-group label { display:block; font-size:.78rem; font-weight:600; color:var(--text); margin-bottom:.3rem; }
+        .form-group input,
+        .form-group textarea {
+            width:100%; padding:.55rem .75rem; border:1.5px solid var(--border); border-radius:6px;
+            font-size:.85rem; font-family:inherit; color:var(--text); background:var(--bg); outline:none; transition:var(--t);
+        }
+        .form-group input:focus,
+        .form-group textarea:focus { border-color:var(--primary); background:#fff; box-shadow:0 0 0 3px rgba(99,102,241,.1); }
+        .form-group input.error { border-color:var(--danger); }
+        .form-group textarea { resize:vertical; min-height:70px; }
+
+        .btn-cancel { background:var(--bg); border:1.5px solid var(--border); color:var(--text); padding:.5rem 1rem; border-radius:6px; font-size:.82rem; font-weight:600; cursor:pointer; font-family:inherit; transition:var(--t); }
+        .btn-cancel:hover { background:var(--border); }
+        .btn-save { background:linear-gradient(135deg,var(--holiday),#be185d); color:#fff; border:none; padding:.5rem 1rem; border-radius:6px; font-size:.82rem; font-weight:600; cursor:pointer; font-family:inherit; transition:var(--t); display:flex; align-items:center; gap:.4rem; }
+        .btn-save:hover { opacity:.88; }
+        .btn-save:disabled { opacity:.6; cursor:not-allowed; }
+
+        .toast-wrap { position:fixed; bottom:1.25rem; right:1.25rem; z-index:2000; display:flex; flex-direction:column; gap:.5rem; }
+        .toast { padding:.7rem 1rem; border-radius:7px; font-size:.82rem; font-weight:600; color:#fff; display:flex; align-items:center; gap:.5rem; box-shadow:var(--shadow-lg); animation:slideIn .3s ease; }
+        .toast.success { background:var(--success); }
+        .toast.error   { background:var(--danger); }
+        @keyframes slideIn { from{transform:translateX(60px);opacity:0} to{transform:translateX(0);opacity:1} }
+
+        .nudge-btn { background:none; border:1.5px dashed var(--holiday); color:var(--holiday); padding:.35rem .7rem; border-radius:6px; font-size:.75rem; font-weight:600; cursor:pointer; width:100%; font-family:inherit; margin-top:.6rem; transition:var(--t); }
+        .nudge-btn:hover { background:rgba(236,72,153,.07); }
+
+        @media (max-width:768px) { .page { grid-template-columns:1fr; } .sidebar-panel { order:-1; } }
+    </style>
 </head>
 <body>
-    <script>
-        fetch("../../backend/check_auth.php")
-            .then(res=>res.text())
-            .then(res=>{
-                if(res=="unauthorized"){
-                    window.location = "login.html";
-                }
-            });
-    </script>
 
-<!-- ── Navbar ─────────────────────────────────── -->
+<script>
+    fetch("../../backend/check_auth.php")
+        .then(r => r.text())
+        .then(t => { if (t.trim() === "unauthorized") window.location = "login.html"; });
+</script>
+
 <nav class="navbar">
-    <div class="container">
-        <a href="dashboard.html" class="logo">
-            <i class="fas fa-graduation-cap"></i>
-            <span>StudyHub</span>
-        </a>
-        <div class="nav-right">
-            <a href="dashboard.html" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Dashboard
-            </a>
-            <button class="logout-btn" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-        </div>
+    <a href="dashboard.html" class="logo"><i class="fas fa-graduation-cap"></i> StudyHub</a>
+    <div class="nav-right">
+        <a href="dashboard.html" class="nav-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+        <button class="nav-btn logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
 </nav>
 
-<!-- ── Page Header ────────────────────────────── -->
-<header class="page-header">
-    <h1><i class="fas fa-calendar-days"></i> Goals Calendar</h1>
-    <p>Track your goal deadlines and stay on top of your objectives</p>
-</header>
+<div class="page">
 
-<!-- ── Main Content ───────────────────────────── -->
-<main class="main-container">
-    <div class="calendar-wrapper">
-        <!-- Calendar Navigation -->
-        <div class="calendar-nav">
-            <button id="prevMonth" class="nav-btn" title="Previous month">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <div class="month-year" id="monthYear">January 2026</div>
-            <button id="nextMonth" class="nav-btn" title="Next month">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-            <button id="todayBtn" class="today-btn">
-                <i class="fas fa-calendar-check"></i> Today
-            </button>
+    <!-- Calendar -->
+    <div class="card">
+        <div class="card-head">
+            <h3><i class="fas fa-calendar-days"></i> Goals Calendar</h3>
+            <div class="cal-nav">
+                <button class="cal-nav-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                <div class="month-label" id="monthLabel">—</div>
+                <button class="cal-nav-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+                <button class="today-btn" id="todayBtn">Today</button>
+            </div>
         </div>
-
-        <!-- Calendar Grid -->
-        <div class="calendar-container">
+        <div class="cal-body">
             <div class="weekdays">
-                <div class="weekday">Sun</div>
-                <div class="weekday">Mon</div>
-                <div class="weekday">Tue</div>
-                <div class="weekday">Wed</div>
-                <div class="weekday">Thu</div>
-                <div class="weekday">Fri</div>
+                <div class="weekday">Sun</div><div class="weekday">Mon</div><div class="weekday">Tue</div>
+                <div class="weekday">Wed</div><div class="weekday">Thu</div><div class="weekday">Fri</div>
                 <div class="weekday">Sat</div>
             </div>
-
-            <div class="calendar-grid" id="calendarGrid">
-                <!-- Generated by JavaScript -->
-            </div>
+            <div class="cal-grid" id="calGrid"></div>
         </div>
-
-        <!-- Legend -->
-        <div class="calendar-legend">
-            <div class="legend-item">
-                <span class="legend-marker goal-deadline"></span>
-                <span>Goal Deadline</span>
-            </div>
-            <div class="legend-item">
-                <span class="legend-marker today-date"></span>
-                <span>Today</span>
-            </div>
-            <div class="legend-item">
-                <span class="legend-marker has-multiple"></span>
-                <span>Multiple Goals</span>
-            </div>
+        <div class="legend">
+            <div class="legend-item"><div class="leg-box" style="border-color:var(--accent);background:rgba(245,158,11,.1)"></div> Goal</div>
+            <div class="legend-item"><div class="leg-box" style="border-color:var(--holiday);background:rgba(236,72,153,.1)"></div> Holiday</div>
+            <div class="legend-item"><div class="leg-box" style="border-color:var(--primary);background:rgba(99,102,241,.15)"></div> Today</div>
+            <div class="legend-item"><div class="leg-dot" style="background:var(--danger)"></div> High</div>
+            <div class="legend-item"><div class="leg-dot" style="background:var(--accent)"></div> Medium</div>
+            <div class="legend-item"><div class="leg-dot" style="background:var(--success)"></div> Low</div>
         </div>
     </div>
 
-    <!-- Goals Summary Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h3 id="sidebarTitle">Select a date</h3>
-            <button class="close-sidebar" id="closeSidebar" title="Close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-
-        <div class="sidebar-content" id="sidebarContent">
-            <div class="empty-state">
-                <i class="fas fa-calendar"></i>
-                <p>Click on a date to view goals</p>
+    <!-- Sidebar -->
+    <div class="sidebar-panel">
+        <div class="card">
+            <div class="card-head">
+                <h3><i class="fas fa-calendar-check"></i> <span id="detailTitle">Select a date</span></h3>
+            </div>
+            <div class="panel-body" id="detailBody">
+                <div class="empty-panel">
+                    <i class="fas fa-hand-pointer"></i>
+                    <p style="font-size:.8rem">Click any date to see goals &amp; holidays</p>
+                </div>
             </div>
         </div>
-    </div>
-</main>
 
-<!-- ═══════════════════════════════════════════
-     GOAL DETAIL MODAL
-     ═══════════════════════════════════════════ -->
-<div class="modal-overlay" id="goalModalOverlay">
-    <div class="modal">
-        <div class="modal-header">
-            <h2 id="goalModalTitle">Goal Details</h2>
-            <button class="modal-close" id="closeModal">&times;</button>
-        </div>
-
-        <div class="modal-body" id="goalModalBody">
-            <!-- Content populated by JavaScript -->
-        </div>
-
-        <div class="modal-footer">
-            <button class="btn-secondary" id="editGoalBtn">
-                <i class="fas fa-edit"></i> Edit Goal
-            </button>
-            <button class="btn-primary" id="viewGoalsPageBtn">
-                <i class="fas fa-link"></i> Go to Goals Page
-            </button>
+        <div class="card">
+            <div class="card-head">
+                <h3><i class="fas fa-umbrella-beach"></i> All Holidays</h3>
+            </div>
+            <div class="panel-body" id="holidaysOverview">
+                <div class="empty-panel"><i class="fas fa-spinner fa-spin"></i><p style="font-size:.8rem">Loading…</p></div>
+            </div>
+            <div style="padding:.5rem .75rem .75rem">
+                <button class="add-holiday-btn" id="addHolidayBtn">
+                    <i class="fas fa-plus"></i> Add Holiday
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
-<script src="../assets/js/calendar.js"></script>
+<!-- Modal -->
+<div class="modal-bg" id="holidayModal">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3><i class="fas fa-umbrella-beach" style="color:var(--holiday);margin-right:.4rem"></i> Add Holiday</h3>
+            <button class="modal-close" id="closeModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="holidayDate">Date <span style="color:var(--danger)">*</span></label>
+                <input type="date" id="holidayDate" required>
+            </div>
+            <div class="form-group">
+                <label for="holidayName">Holiday Name <span style="color:var(--danger)">*</span></label>
+                <input type="text" id="holidayName" placeholder="e.g., Eid ul-Fitr" required>
+            </div>
+            <div class="form-group">
+                <label for="holidayDesc">Description <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+                <textarea id="holidayDesc" placeholder="Any notes about this holiday…"></textarea>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn-cancel" id="cancelModal">Cancel</button>
+            <button class="btn-save" id="saveHolidayBtn"><i class="fas fa-check"></i> Save Holiday</button>
+        </div>
+    </div>
+</div>
 
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+const API = '../../backend';
+
+let currentDate     = new Date();
+let allGoals        = [];
+let allHolidays     = [];
+let selectedDateStr = null;
+
+const MONTHS = ['January','February','March','April','May','June',
+                'July','August','September','October','November','December'];
+
+document.addEventListener('DOMContentLoaded', () => {
+    bindEvents();
+    Promise.all([loadGoals(), loadHolidays()]).then(() => renderCalendar());
+});
+
+function bindEvents() {
+    document.getElementById('prevBtn').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth()-1); renderCalendar(); });
+    document.getElementById('nextBtn').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth()+1); renderCalendar(); });
+    document.getElementById('todayBtn').addEventListener('click', () => { currentDate = new Date(); renderCalendar(); selectDate(toDateStr(new Date())); });
+    document.getElementById('addHolidayBtn').addEventListener('click', () => openModal(null));
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('cancelModal').addEventListener('click', closeModal);
+    document.getElementById('saveHolidayBtn').addEventListener('click', saveHoliday);
+    document.getElementById('holidayModal').addEventListener('click', e => { if (e.target === document.getElementById('holidayModal')) closeModal(); });
+}
+
+function loadGoals() {
+    return fetch(`${API}/get_goals.php`, { credentials: 'include' })
+        .then(r => r.json())
+        .then(d => { if (d.success) allGoals = d.goals || []; })
+        .catch(() => {});
+}
+
+function loadHolidays() {
+    return fetch(`${API}/get_holidays.php`, { credentials: 'include' })
+        .then(r => r.json())
+        .then(d => { if (d.success) allHolidays = d.holidays || []; renderHolidaysOverview(); })
+        .catch(() => { renderHolidaysOverview(); });
+}
+
+function buildMaps() {
+    const goalMap = {}, holidayMap = {};
+    allGoals.forEach(g => { (goalMap[g.target_date] = goalMap[g.target_date] || []).push(g); });
+    allHolidays.forEach(h => { (holidayMap[h.date] = holidayMap[h.date] || []).push(h); });
+    return { goalMap, holidayMap };
+}
+
+function renderCalendar() {
+    const year = currentDate.getFullYear(), month = currentDate.getMonth();
+    document.getElementById('monthLabel').textContent = MONTHS[month] + ' ' + year;
+
+    const firstDay    = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const prevDays    = new Date(year, month, 0).getDate();
+    const today       = toDateStr(new Date());
+    const { goalMap, holidayMap } = buildMaps();
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+
+    for (let i = firstDay-1; i >= 0; i--)
+        grid.appendChild(buildDay(prevDays-i, month-1, year, true, goalMap, holidayMap, today));
+    for (let d = 1; d <= daysInMonth; d++)
+        grid.appendChild(buildDay(d, month, year, false, goalMap, holidayMap, today));
+    const rem = (grid.children.length <= 35 ? 35 : 42) - grid.children.length;
+    for (let d = 1; d <= rem; d++)
+        grid.appendChild(buildDay(d, month+1, year, true, goalMap, holidayMap, today));
+}
+
+function buildDay(day, month, year, isOther, goalMap, holidayMap, today) {
+    let ry = year, rm = month;
+    if (month < 0)  { rm = 11; ry = year - 1; }
+    if (month > 11) { rm = 0;  ry = year + 1; }
+    const dateStr = toDateStrParts(ry, rm+1, day);
+
+    const cell = document.createElement('div');
+    cell.className = 'day';
+    if (isOther) { cell.classList.add('other-month'); cell.innerHTML = `<div class="day-num">${day}</div>`; return cell; }
+
+    if (dateStr === today)           cell.classList.add('today');
+    if (dateStr === selectedDateStr) cell.classList.add('selected');
+
+    const goalsHere    = goalMap[dateStr]    || [];
+    const holidaysHere = holidayMap[dateStr] || [];
+    if (goalsHere.length)    cell.classList.add('has-goal');
+    if (holidaysHere.length) cell.classList.add('has-holiday');
+
+    const numEl = document.createElement('div');
+    numEl.className = 'day-num';
+    numEl.textContent = day;
+    cell.appendChild(numEl);
+
+    if (goalsHere.length || holidaysHere.length) {
+        const dotsEl = document.createElement('div');
+        dotsEl.className = 'day-dots';
+        goalsHere.slice(0,2).forEach(g => {
+            const d = document.createElement('div');
+            d.className = 'dot';
+            d.style.background = g.priority==='high' ? 'var(--danger)' : g.priority==='medium' ? 'var(--accent)' : 'var(--success)';
+            dotsEl.appendChild(d);
+        });
+        if (goalsHere.length > 2) { const m=document.createElement('div'); m.className='dot more'; m.textContent='+'+(goalsHere.length-2); dotsEl.appendChild(m); }
+        holidaysHere.forEach(() => { const d=document.createElement('div'); d.className='dot'; d.style.background='var(--holiday)'; dotsEl.appendChild(d); });
+        cell.appendChild(dotsEl);
+    }
+
+    cell.addEventListener('click', () => selectDate(dateStr));
+    return cell;
+}
+
+function selectDate(dateStr) {
+    selectedDateStr = dateStr;
+    renderCalendar();
+    const [y, m, d] = dateStr.split('-');
+    document.getElementById('detailTitle').textContent = `${MONTHS[parseInt(m)-1]} ${parseInt(d)}, ${y}`;
+
+    const { goalMap, holidayMap } = buildMaps();
+    const goalsHere    = goalMap[dateStr]    || [];
+    const holidaysHere = holidayMap[dateStr] || [];
+    const statusLabel  = { pending:'Pending', in_progress:'In Progress', completed:'Completed' };
+
+    let html = '';
+    if (holidaysHere.length) {
+        html += `<div class="section-label" style="color:var(--holiday)"><i class="fas fa-umbrella-beach"></i> Holidays</div>`;
+        holidaysHere.forEach(h => {
+            html += `<div class="holiday-item">
+                <button class="holiday-del" onclick="deleteHoliday(${h.id})"><i class="fas fa-trash"></i></button>
+                <h4>${escHtml(h.name)}</h4>
+                ${h.description ? `<p>${escHtml(h.description)}</p>` : ''}
+            </div>`;
+        });
+    }
+    if (goalsHere.length) {
+        if (html) html += '<div style="height:.5rem"></div>';
+        html += `<div class="section-label" style="color:var(--primary)"><i class="fas fa-bullseye"></i> Goals</div>`;
+        goalsHere.forEach(g => {
+            html += `<div class="goal-item priority-${g.priority}">
+                <h4>${escHtml(g.goal_text)}</h4>
+                <div class="goal-badges">
+                    <span class="badge ${g.priority}">${g.priority}</span>
+                    <span class="badge ${g.status}">${statusLabel[g.status]||g.status}</span>
+                </div>
+            </div>`;
+        });
+    }
+    if (!html) html = `<div class="empty-panel"><i class="fas fa-calendar-xmark"></i><p style="font-size:.8rem">Nothing on this date.</p></div>`;
+
+    html += `<button class="nudge-btn" onclick="openModal('${dateStr}')"><i class="fas fa-plus"></i> Add holiday on this date</button>`;
+    document.getElementById('detailBody').innerHTML = html;
+}
+
+function renderHolidaysOverview() {
+    const el = document.getElementById('holidaysOverview');
+    if (!allHolidays.length) { el.innerHTML = `<div class="empty-panel"><i class="fas fa-sun"></i><p style="font-size:.8rem">No holidays added yet</p></div>`; return; }
+    const sorted = [...allHolidays].sort((a,b) => a.date.localeCompare(b.date));
+    el.innerHTML = sorted.map(h => {
+        const [y,m,d] = h.date.split('-');
+        const lbl = `${MONTHS[parseInt(m)-1].slice(0,3)} ${parseInt(d)}, ${y}`;
+        return `<div class="holiday-item" style="margin-bottom:.4rem">
+            <button class="holiday-del" onclick="deleteHoliday(${h.id})"><i class="fas fa-trash"></i></button>
+            <h4>${escHtml(h.name)}</h4>
+            <p>${lbl}${h.description ? ' · '+escHtml(h.description).slice(0,50)+(h.description.length>50?'…':'') : ''}</p>
+        </div>`;
+    }).join('');
+}
+
+function openModal(prefillDate) {
+    document.getElementById('holidayName').value = '';
+    document.getElementById('holidayDesc').value = '';
+    document.getElementById('holidayDate').value = prefillDate || '';
+    ['holidayDate','holidayName'].forEach(id => document.getElementById(id).classList.remove('error'));
+    document.getElementById('holidayModal').classList.add('open');
+    setTimeout(() => document.getElementById('holidayName').focus(), 100);
+}
+
+function closeModal() { document.getElementById('holidayModal').classList.remove('open'); }
+
+async function saveHoliday() {
+    const date = document.getElementById('holidayDate').value;
+    const name = document.getElementById('holidayName').value.trim();
+    const desc = document.getElementById('holidayDesc').value.trim();
+    document.getElementById('holidayDate').classList.toggle('error', !date);
+    document.getElementById('holidayName').classList.toggle('error', !name);
+    if (!date || !name) return;
+
+    const btn = document.getElementById('saveHolidayBtn');
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+    try {
+        const fd = new FormData();
+        fd.append('date', date); fd.append('name', name); fd.append('description', desc);
+        const res  = await fetch(`${API}/add_holiday.php`, { method:'POST', body:fd, credentials:'include' });
+        const data = await res.json();
+        if (data.success) {
+            allHolidays.push(data.holiday);
+            closeModal(); renderCalendar(); renderHolidaysOverview();
+            if (selectedDateStr === date) selectDate(date);
+            showToast('Holiday added!', 'success');
+        } else {
+            showToast(data.message || 'Failed to save holiday', 'error');
+        }
+    } catch { showToast('Network error', 'error'); }
+    finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-check"></i> Save Holiday'; }
+}
+
+async function deleteHoliday(id) {
+    if (!confirm('Delete this holiday?')) return;
+    try {
+        const fd = new FormData(); fd.append('id', id);
+        const res  = await fetch(`${API}/delete_holiday.php`, { method:'POST', body:fd, credentials:'include' });
+        const data = await res.json();
+        if (data.success) {
+            allHolidays = allHolidays.filter(h => h.id != id);
+            renderCalendar(); renderHolidaysOverview();
+            if (selectedDateStr) selectDate(selectedDateStr);
+            showToast('Holiday deleted', 'success');
+        } else { showToast(data.message || 'Could not delete', 'error'); }
+    } catch { showToast('Network error', 'error'); }
+}
+
+function showToast(msg, type='success') {
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}"></i> ${msg}`;
+    document.getElementById('toastWrap').appendChild(t);
+    setTimeout(() => { t.style.transition='opacity .3s'; t.style.opacity='0'; setTimeout(()=>t.remove(),320); }, 3000);
+}
+
+function toDateStr(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function toDateStrParts(y,m,d) { return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function logout() { fetch(`${API}/logout.php`,{credentials:'include'}).then(()=>window.location.href='../../index.html'); }
+</script>
 </body>
 </html>
