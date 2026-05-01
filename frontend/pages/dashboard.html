@@ -19,6 +19,7 @@
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
+
         .stat-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -30,30 +31,56 @@
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
         }
+
         .stat-card:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
             border-color: var(--border-2);
         }
+
         .stat-icon {
-            width: 46px; height: 46px;
+            width: 46px;
+            height: 46px;
             border-radius: 12px;
-            display: grid; place-items: center;
+            display: grid;
+            place-items: center;
             font-size: 1.15rem;
             flex-shrink: 0;
         }
-        .stat-card.primary .stat-icon { background: var(--primary-50); color: var(--primary); }
-        .stat-card.success .stat-icon { background: var(--success-bg); color: var(--success); }
-        .stat-card.accent  .stat-icon { background: var(--warning-bg); color: var(--warning); }
-        .stat-card.danger  .stat-icon { background: var(--danger-bg); color: var(--danger); }
 
-        .stat-meta { display: flex; flex-direction: column; line-height: 1.15; }
+        .stat-card.primary .stat-icon {
+            background: var(--primary-50);
+            color: var(--primary);
+        }
+
+        .stat-card.success .stat-icon {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .stat-card.accent .stat-icon {
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+
+        .stat-card.danger .stat-icon {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .stat-meta {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
+        }
+
         .stat-value {
             font-family: 'Fraunces', serif;
             font-size: 1.6rem;
             font-weight: 700;
             color: var(--text);
         }
+
         .stat-label {
             font-size: .78rem;
             color: var(--text-3);
@@ -69,12 +96,26 @@
             gap: 1.25rem;
             align-items: start;
         }
+
         @media (max-width: 1100px) {
-            .dash-grid { grid-template-columns: 1fr; }
+            .dash-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .col-stack { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
-        .side-stack { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
+        .col-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            min-width: 0;
+        }
+
+        .side-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            min-width: 0;
+        }
 
         /* ── Quick actions ─────────────────────── */
         .quick-actions {
@@ -82,6 +123,7 @@
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: .75rem;
         }
+
         .action-btn {
             display: flex;
             flex-direction: column;
@@ -98,18 +140,38 @@
             text-align: left;
             transition: var(--transition);
         }
-        .action-btn:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+
+        .action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
         .action-btn i {
-            width: 32px; height: 32px;
+            width: 32px;
+            height: 32px;
             border-radius: 9px;
-            display: grid; place-items: center;
+            display: grid;
+            place-items: center;
             background: var(--primary-50);
             color: var(--primary);
             font-size: .9rem;
         }
-        .action-btn.secondary i { background: var(--info-bg); color: var(--info); }
-        .action-btn.success   i { background: var(--success-bg); color: var(--success); }
-        .action-btn.accent    i { background: var(--warning-bg); color: var(--warning); }
+
+        .action-btn.secondary i {
+            background: var(--info-bg);
+            color: var(--info);
+        }
+
+        .action-btn.success i {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .action-btn.accent i {
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
 
         /* ── Section header w/ link ───────────── */
         .section-head {
@@ -118,14 +180,21 @@
             align-items: center;
             margin-bottom: 1rem;
         }
-        .section-head .section-title { margin: 0; }
+
+        .section-head .section-title {
+            margin: 0;
+        }
+
         .view-all {
             font-size: .82rem;
             font-weight: 600;
             color: var(--primary);
             transition: var(--transition);
         }
-        .view-all:hover { color: #1d4ed8; }
+
+        .view-all:hover {
+            color: #1d4ed8;
+        }
 
         /* ── Item list (notes / assignments) ─── */
         .item-list {
@@ -133,6 +202,7 @@
             margin: 0;
             padding: 0;
         }
+
         .item-list li {
             display: flex;
             justify-content: space-between;
@@ -142,9 +212,22 @@
             border-bottom: 1px solid var(--border);
             transition: background var(--transition);
         }
-        .item-list li:last-child { border-bottom: none; }
-        .item-list li:hover { background: var(--surface-2); padding-left: .6rem; padding-right: .6rem; border-radius: 8px; }
-        .item-info { min-width: 0; }
+
+        .item-list li:last-child {
+            border-bottom: none;
+        }
+
+        .item-list li:hover {
+            background: var(--surface-2);
+            padding-left: .6rem;
+            padding-right: .6rem;
+            border-radius: 8px;
+        }
+
+        .item-info {
+            min-width: 0;
+        }
+
         .item-info h4 {
             margin: 0 0 .15rem;
             font-size: .92rem;
@@ -154,11 +237,13 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
+
         .item-info p {
             margin: 0;
             font-size: .78rem;
             color: var(--text-3);
         }
+
         .item-badge {
             background: var(--primary-50);
             color: var(--primary);
@@ -168,8 +253,16 @@
             font-weight: 600;
             white-space: nowrap;
         }
-        .item-badge.urgent { background: var(--danger-bg); color: var(--danger); }
-        .item-badge.completed { background: var(--success-bg); color: var(--success); }
+
+        .item-badge.urgent {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .item-badge.completed {
+            background: var(--success-bg);
+            color: var(--success);
+        }
 
         /* ── Skeleton ──────────────────────────── */
         .skel-line {
@@ -177,43 +270,71 @@
             border-radius: 4px;
             animation: pulse 1.4s ease-in-out infinite;
         }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .5
+            }
+        }
 
         /* ── Calendar (kept similar, light theme) ─ */
-        .calendar-container { padding: .25rem; }
+        .calendar-container {
+            padding: .25rem;
+        }
+
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
         }
+
         .calendar-month {
             font-size: 1.05rem;
             font-weight: 700;
             color: var(--text);
         }
-        .calendar-nav { display: flex; gap: .35rem; }
+
+        .calendar-nav {
+            display: flex;
+            gap: .35rem;
+        }
+
         .calendar-nav button {
             background: var(--surface);
             border: 1px solid var(--border);
             color: var(--text-2);
-            min-width: 32px; height: 32px;
+            min-width: 32px;
+            height: 32px;
             padding: 0 .55rem;
             border-radius: 8px;
             font-size: .82rem;
             cursor: pointer;
             transition: var(--transition);
         }
+
         .calendar-nav button:hover {
             border-color: var(--primary);
             color: var(--primary);
         }
-        .weekdays, .calendar-grid {
+
+        .weekdays,
+        .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 4px;
         }
-        .weekdays { margin-bottom: 4px; }
+
+        .weekdays {
+            margin-bottom: 4px;
+        }
+
         .weekday {
             text-align: center;
             font-weight: 600;
@@ -223,6 +344,7 @@
             text-transform: uppercase;
             letter-spacing: .05em;
         }
+
         .calendar-day {
             aspect-ratio: 1;
             display: grid;
@@ -236,27 +358,41 @@
             background: var(--surface);
             transition: var(--transition);
         }
-        .calendar-day:hover { border-color: var(--primary); background: var(--primary-50); }
-        .calendar-day.other-month { color: var(--text-3); background: transparent; border-color: transparent; }
+
+        .calendar-day:hover {
+            border-color: var(--primary);
+            background: var(--primary-50);
+        }
+
+        .calendar-day.other-month {
+            color: var(--text-3);
+            background: transparent;
+            border-color: transparent;
+        }
+
         .calendar-day.today {
             background: var(--primary);
             color: #fff;
             font-weight: 700;
             border-color: var(--primary);
         }
+
         .calendar-day.has-goal {
             border-color: var(--warning);
             background: var(--warning-bg);
             font-weight: 600;
         }
+
         .calendar-day.has-goal::after {
             content: '';
             position: absolute;
             bottom: 4px;
-            width: 4px; height: 4px;
+            width: 4px;
+            height: 4px;
             background: var(--warning);
             border-radius: 50%;
         }
+
         .calendar-legend {
             display: flex;
             gap: 1rem;
@@ -267,14 +403,35 @@
             color: var(--text-2);
             flex-wrap: wrap;
         }
-        .legend-item { display: flex; align-items: center; gap: .4rem; }
-        .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
-        .legend-dot.goal  { background: var(--warning); }
-        .legend-dot.today { background: var(--primary); }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.goal {
+            background: var(--warning);
+        }
+
+        .legend-dot.today {
+            background: var(--primary);
+        }
 
         @media (max-width: 600px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .quick-actions { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -424,11 +581,13 @@
             <ul class="nav">
                 <li><a href="goals.html"><i class="fas fa-bullseye"></i><span>Goals</span></a></li>
                 <li><a href="calendar.html"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a></li>
+                <li><a href="analytics.html"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
             </ul>
             <div class="nav-section-label">Account</div>
             <ul class="nav">
                 <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
-                <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+                <li><a href="#" onclick="logout(); return false;"><i
+                            class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="user-chip">
@@ -445,7 +604,9 @@
         <div class="app-main">
             <header class="topbar">
                 <div style="display:flex;align-items:center;gap:.75rem;">
-                    <button class="menu-btn icon-btn" onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i class="fas fa-bars"></i></button>
+                    <button class="menu-btn icon-btn"
+                        onclick="document.getElementById('app').classList.toggle('sidebar-open')"><i
+                            class="fas fa-bars"></i></button>
                     <div class="topbar-title">
                         <h1 id="greetTitle">Good day 👋</h1>
                         <p id="greetSub">Track your academic progress and manage your study materials</p>
@@ -519,9 +680,27 @@
                                 <a href="notes.html" class="view-all">View all →</a>
                             </div>
                             <ul class="item-list" id="recentNotesList">
-                                <li><div style="flex:1"><div class="skel-line" style="width:55%;height:14px;margin-bottom:6px;"></div><div class="skel-line" style="width:35%;height:11px;"></div></div><div class="skel-line" style="width:70px;height:22px;border-radius:999px;"></div></li>
-                                <li><div style="flex:1"><div class="skel-line" style="width:65%;height:14px;margin-bottom:6px;"></div><div class="skel-line" style="width:40%;height:11px;"></div></div><div class="skel-line" style="width:70px;height:22px;border-radius:999px;"></div></li>
-                                <li><div style="flex:1"><div class="skel-line" style="width:45%;height:14px;margin-bottom:6px;"></div><div class="skel-line" style="width:30%;height:11px;"></div></div><div class="skel-line" style="width:70px;height:22px;border-radius:999px;"></div></li>
+                                <li>
+                                    <div style="flex:1">
+                                        <div class="skel-line" style="width:55%;height:14px;margin-bottom:6px;"></div>
+                                        <div class="skel-line" style="width:35%;height:11px;"></div>
+                                    </div>
+                                    <div class="skel-line" style="width:70px;height:22px;border-radius:999px;"></div>
+                                </li>
+                                <li>
+                                    <div style="flex:1">
+                                        <div class="skel-line" style="width:65%;height:14px;margin-bottom:6px;"></div>
+                                        <div class="skel-line" style="width:40%;height:11px;"></div>
+                                    </div>
+                                    <div class="skel-line" style="width:70px;height:22px;border-radius:999px;"></div>
+                                </li>
+                                <li>
+                                    <div style="flex:1">
+                                        <div class="skel-line" style="width:45%;height:14px;margin-bottom:6px;"></div>
+                                        <div class="skel-line" style="width:30%;height:11px;"></div>
+                                    </div>
+                                    <div class="skel-line" style="width:70px;height:22px;border-radius:999px;"></div>
+                                </li>
                             </ul>
                         </section>
 
@@ -548,20 +727,30 @@
                                 <div class="calendar-header">
                                     <div class="calendar-month" id="calendarMonth">—</div>
                                     <div class="calendar-nav">
-                                        <button id="prevMonth" title="Previous month"><i class="fas fa-chevron-left"></i></button>
+                                        <button id="prevMonth" title="Previous month"><i
+                                                class="fas fa-chevron-left"></i></button>
                                         <button id="todayBtn" title="Today">Today</button>
-                                        <button id="nextMonth" title="Next month"><i class="fas fa-chevron-right"></i></button>
+                                        <button id="nextMonth" title="Next month"><i
+                                                class="fas fa-chevron-right"></i></button>
                                     </div>
                                 </div>
                                 <div class="weekdays">
-                                    <div class="weekday">Sun</div><div class="weekday">Mon</div><div class="weekday">Tue</div>
-                                    <div class="weekday">Wed</div><div class="weekday">Thu</div><div class="weekday">Fri</div>
+                                    <div class="weekday">Sun</div>
+                                    <div class="weekday">Mon</div>
+                                    <div class="weekday">Tue</div>
+                                    <div class="weekday">Wed</div>
+                                    <div class="weekday">Thu</div>
+                                    <div class="weekday">Fri</div>
                                     <div class="weekday">Sat</div>
                                 </div>
                                 <div class="calendar-grid" id="calendarGrid"></div>
                                 <div class="calendar-legend">
-                                    <div class="legend-item"><div class="legend-dot goal"></div><span>Goal</span></div>
-                                    <div class="legend-item"><div class="legend-dot today"></div><span>Today</span></div>
+                                    <div class="legend-item">
+                                        <div class="legend-dot goal"></div><span>Goal</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-dot today"></div><span>Today</span>
+                                    </div>
                                 </div>
                             </div>
                         </section>
@@ -587,7 +776,7 @@
                     document.getElementById("greetSub").textContent = today;
                 }
             })
-            .catch(() => {});
+            .catch(() => { });
 
         /* ─── Calendar logic (preserved) ─── */
         let currentCalendarDate = new Date();
@@ -615,7 +804,7 @@
         function renderCalendar() {
             const year = currentCalendarDate.getFullYear();
             const month = currentCalendarDate.getMonth();
-            const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             document.getElementById('calendarMonth').textContent = monthNames[month] + ' ' + year;
 
             const firstDay = new Date(year, month, 1).getDay();
