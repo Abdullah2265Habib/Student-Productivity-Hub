@@ -23,8 +23,8 @@ if ($action === 'update_profile') {
     $name = trim($_POST['name'] ?? '');
     $new_email = trim($_POST['email'] ?? '');
 
-    if (empty($name) || empty($new_email)) {
-        echo json_encode(["success" => false, "message" => "Name and Email are required"]);
+    if (empty($new_email)) {
+        echo json_encode(["success" => false, "message" => "Email are required"]);
         exit;
     }
     
@@ -44,8 +44,8 @@ if ($action === 'update_profile') {
         }
     }
 
-    $stmt = $conn->prepare("UPDATE students SET name = ?, email = ? WHERE email = ?");
-    $stmt->bind_param("sss", $name, $new_email, $session_email);
+    $stmt = $conn->prepare("UPDATE students SET email = ? WHERE email = ?");
+    $stmt->bind_param("ss", $new_email, $session_email);
     
     if ($stmt->execute()) {
         // Update session with new email
