@@ -84,13 +84,13 @@ if ($action === 'update_profile') {
     $hash = $user['password'];
 
     // Verify current password
-    if (!password_verify($current_password, $hash)) {
+    if ($current_password !== $hash) {
         echo json_encode(["success" => false, "message" => "Incorrect current password"]);
         exit;
     }
 
-    // Hash new password
-    $new_hash = password_hash($new_password, PASSWORD_DEFAULT);
+    // Store new password as plain text (consistent with signup.php)
+    $new_hash = $new_password;
 
     $stmt = $conn->prepare("UPDATE students SET password = ? WHERE email = ?");
     $stmt->bind_param("ss", $new_hash, $session_email);
