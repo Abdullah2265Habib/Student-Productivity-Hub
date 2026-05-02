@@ -216,10 +216,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentDays              = parseInt(s.notify_days_before) || 3;
                 daysValue.textContent    = currentDays;
 
+                // Populate SMTP fields
+                const smtpEmailInput = document.getElementById('smtpEmail');
+                const smtpPassInput  = document.getElementById('smtpPassword');
+                if (smtpEmailInput && s.smtp_email) smtpEmailInput.value = s.smtp_email;
+                if (smtpPassInput && s.smtp_password_set) smtpPassInput.placeholder = '••••••••••••••••  (saved)';
+
                 toggleOptions();
-                updateSmtpBanner(data.smtp_configured);
+                updateSmtpBanner(data.smtp_configured, data.smtp_source);
             })
-            .catch(() => updateSmtpBanner(false));
+            .catch(() => updateSmtpBanner(false, 'none'));
 
         // ── Master toggle ────────────────────────────────
         notifEnabled.addEventListener('change', toggleOptions);
@@ -340,17 +346,92 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         });
 
+        // ── SMTP Form Submit ─────────────────────────────
+        const smtpForm    = document.getElementById('smtpForm');
+        const saveSmtpBtn = document.getElementById('saveSmtpBtn');
+
+        if (smtpForm) {
+            smtpForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const smtpEmail = document.getElementById('smtpEmail').value.trim();
+                const smtpPass  = document.getElementById('smtpPassword').value.trim();
+
+                if (!smtpEmail) {
+                    showToast('error', 'Missing Email', 'Please enter your Gmail address.');
+                    return;
+                }
+
+                saveSmtpBtn.disabled = true;
+                saveSmtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+                // Save SMTP along with current notification preferences
+                const payload = {
+                    notifications_enabled: notifEnabled.checked ? 1 : 0,
+                    notify_days_before:    currentDays,
+                    notify_assignments:    notifAssignments.checked ? 1 : 0,
+                    notify_goals:          notifGoals.checked ? 1 : 0,
+                    smtp_email:            smtpEmail,
+                    smtp_password:         smtpPass,   // empty string = keep existing
+                };
+
+                fetch('../../backend/update_notification_settings.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+                .then(r => r.json())
+                .then(data => {
+                    saveSmtpBtn.disabled = false;
+                    saveSmtpBtn.innerHTML = '<i class="fas fa-save"></i> Save Email Setup';
+                    if (data.success) {
+                        showToast('success', 'Saved', 'Email setup saved! Use the Test button below to verify.');
+                        if (smtpPass) document.getElementById('smtpPassword').placeholder = '••••••••••••••••  (saved)';
+                        document.getElementById('smtpPassword').value = '';
+                        updateSmtpBanner(true, 'personal');
+                    } else {
+                        showToast('error', 'Error', data.message || 'Could not save.');
+                    }
+                })
+                .catch(() => {
+                    saveSmtpBtn.disabled = false;
+                    saveSmtpBtn.innerHTML = '<i class="fas fa-save"></i> Save Email Setup';
+                    showToast('error', 'Network Error', 'Could not connect to the server.');
+                });
+            });
+        }
+
+        // ── Re-register toggle-password for SMTP field ───
+        document.querySelectorAll('#smtpForm .toggle-password').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const input = e.currentTarget.previousElementSibling;
+                const icon = e.currentTarget.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            });
+        });
+
     } // end notifEnabled guard
 
     // ── Helpers ───────────────────────────────────────────
-    function updateSmtpBanner(configured) {
+    function updateSmtpBanner(configured, source) {
         if (!smtpStatus) return;
         smtpStatus.className = 'notif-smtp-status ' + (configured ? 'configured' : 'not-configured');
-        smtpStatus.innerHTML = configured
-            ? `<div class="smtp-icon"><i class="fas fa-check-circle"></i></div>
-               <div class="smtp-text"><strong>SMTP configured</strong> — Your email notifications are ready to go.</div>`
-            : `<div class="smtp-icon"><i class="fas fa-exclamation-triangle"></i></div>
-               <div class="smtp-text"><strong>SMTP not configured</strong> — Edit <code>backend/email_config.php</code> with your SMTP credentials to enable email sending.</div>`;
+        if (configured) {
+            const label = source === 'personal'
+                ? 'Your Gmail is connected'
+                : 'Using system email configuration';
+            smtpStatus.innerHTML = `<div class="smtp-icon"><i class="fas fa-check-circle"></i></div>
+               <div class="smtp-text"><strong>${label}</strong> — Email notifications are ready to go.</div>`;
+        } else {
+            smtpStatus.innerHTML = `<div class="smtp-icon"><i class="fas fa-exclamation-triangle"></i></div>
+               <div class="smtp-text"><strong>Email not set up</strong> — Enter your Gmail address and App Password below to enable notifications.</div>`;
+        }
     }
 
     function showResult(type, html) {

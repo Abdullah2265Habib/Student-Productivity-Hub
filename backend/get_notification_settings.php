@@ -26,7 +26,7 @@ if (!$row) {
 $student_id = $row['id'];
 
 // Try to get existing settings
-$stmt = $conn->prepare("SELECT notifications_enabled, notify_days_before, notify_assignments, notify_goals FROM notification_settings WHERE student_id = ?");
+$stmt = $conn->prepare("SELECT notifications_enabled, notify_days_before, notify_assignments, notify_goals, smtp_email, smtp_password FROM notification_settings WHERE student_id = ?");
 $stmt->bind_param("i", $student_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -44,17 +44,36 @@ if ($result->num_rows > 0) {
         'notify_days_before'    => 3,
         'notify_assignments'    => 1,
         'notify_goals'          => 1,
+        'smtp_email'            => null,
+        'smtp_password'         => null,
     ];
 }
 
-// Check SMTP config status
+// Mask the password for the frontend (never send raw password back)
+$smtp_configured = !empty($settings['smtp_email']) && !empty($settings['smtp_password']);
+$masked_password = '';
+if (!empty($settings['smtp_password'])) {
+    $len = strlen($settings['smtp_password']);
+    $masked_password = str_repeat('•', min($len, 16));
+}
+
+// Also check fallback config file
 $config = require __DIR__ . '/email_config.php';
-$smtp_configured = !empty($config['smtp_user']) && !empty($config['smtp_pass']) && !empty($config['configured']);
+$fallback_configured = !empty($config['smtp_user']) && !empty($config['smtp_pass']) && !empty($config['configured']);
 
 echo json_encode([
-    'success'          => true,
-    'settings'         => $settings,
-    'smtp_configured'  => $smtp_configured,
+    'success'              => true,
+    'settings'             => [
+        'notifications_enabled' => $settings['notifications_enabled'],
+        'notify_days_before'    => $settings['notify_days_before'],
+        'notify_assignments'    => $settings['notify_assignments'],
+        'notify_goals'          => $settings['notify_goals'],
+        'smtp_email'            => $settings['smtp_email'] ?? '',
+        'smtp_password_set'     => !empty($settings['smtp_password']),
+        'smtp_password_masked'  => $masked_password,
+    ],
+    'smtp_configured'      => $smtp_configured || $fallback_configured,
+    'smtp_source'          => $smtp_configured ? 'personal' : ($fallback_configured ? 'system' : 'none'),
 ]);
 
 $conn->close();

@@ -2,11 +2,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // StudyHub — Notification Cron / Check-and-Send Script
 //
-// This script checks ALL students for upcoming deadlines and sends emails.
-// Run it daily via Windows Task Scheduler or call it from the browser.
+// Checks ALL students for upcoming deadlines and sends emails.
+// Uses each student's own SMTP credentials (from DB) with fallback to config.
 //
-// Task Scheduler:  php "D:\Other\MAMP\MAMP\htdocs\Student-Productivity-Hub\backend\notification_cron.php"
-// Browser:         http://localhost/Student-Productivity-Hub/backend/notification_cron.php?key=YOUR_SECRET
+// Task Scheduler:  php "D:\...\backend\notification_cron.php"
+// Browser:         http://yoursite.com/backend/notification_cron.php?key=studyhub_notify_2026
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Optional: simple key to prevent unauthorised web hits
@@ -25,21 +25,15 @@ include __DIR__ . '/db_config.php';
 require_once __DIR__ . '/smtp_mailer.php';
 require_once __DIR__ . '/email_templates.php';
 
-$mailer = new StudyHubMailer();
-if (!$mailer->isConfigured()) {
-    $msg = 'SMTP not configured — skipping notification run.';
-    if (php_sapi_name() === 'cli') { echo $msg . "\n"; } 
-    else { echo json_encode(['success' => false, 'error' => $msg]); }
-    exit;
-}
-
-$today = new DateTime();
-$sent  = 0;
+$today  = new DateTime();
+$sent   = 0;
 $errors = [];
 
 // ── Get all students with notifications enabled ──────────────────────────
 $sql = "
-    SELECT s.id, s.name, s.email, ns.notify_days_before, ns.notify_assignments, ns.notify_goals
+    SELECT s.id, s.name, s.email,
+           ns.notify_days_before, ns.notify_assignments, ns.notify_goals,
+           ns.smtp_email, ns.smtp_password
     FROM students s
     JOIN notification_settings ns ON ns.student_id = s.id
     WHERE ns.notifications_enabled = 1
@@ -105,6 +99,14 @@ while ($stu = $students->fetch_assoc()) {
     $dup->bind_param("i", $sid);
     $dup->execute();
     if ($dup->get_result()->num_rows > 0) continue;   // already sent today
+
+    // ── Create mailer with per-student SMTP credentials ──────────────
+    $mailer = new StudyHubMailer($stu['smtp_email'], $stu['smtp_password']);
+
+    if (!$mailer->isConfigured()) {
+        $errors[] = "Skipped {$stu['email']}: No SMTP credentials configured.";
+        continue;
+    }
 
     // ── Send email ───────────────────────────────────────────────────
     $html   = EmailTemplates::deadlineReminder($stu['name'], $upcoming_assignments, $upcoming_goals);

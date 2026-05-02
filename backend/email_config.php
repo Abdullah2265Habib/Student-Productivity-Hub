@@ -13,8 +13,8 @@
 return [
     'smtp_host' => 'smtp.gmail.com',
     'smtp_port' => 465,
-    'smtp_user' => 'abdullah2265habib@gmail.com',          // e.g. your.email@gmail.com
-    'smtp_pass' => 'xqyt ujeb jmef usrj',          // Gmail App Password (16 characters)
+    'smtp_user' => '',          // e.g. your.email@gmail.com
+    'smtp_pass' => '',          // Gmail App Password (16 characters)
     'from_name' => 'StudyHub',
 
     // Set to true once you have configured the above credentials

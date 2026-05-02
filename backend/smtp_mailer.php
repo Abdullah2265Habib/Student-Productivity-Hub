@@ -2,6 +2,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // StudyHub — Lightweight SMTP Mailer (zero external dependencies)
 // Supports SSL connections (port 465) for Gmail, Outlook, etc.
+//
+// Credentials can come from:
+//   1. Per-student DB settings (smtp_email / smtp_password in notification_settings)
+//   2. Fallback: backend/email_config.php (server-wide default)
 // ─────────────────────────────────────────────────────────────────────────────
 
 class StudyHubMailer {
@@ -11,21 +15,37 @@ class StudyHubMailer {
     private $user;
     private $pass;
     private $fromName;
-    private $configured;
 
-    public function __construct() {
+    /**
+     * @param string|null $smtpEmail    Per-student SMTP email (from DB)
+     * @param string|null $smtpPassword Per-student SMTP password (from DB)
+     */
+    public function __construct($smtpEmail = null, $smtpPassword = null) {
+
+        // Default from config file
         $config = require __DIR__ . '/email_config.php';
-        $this->host      = $config['smtp_host']  ?? '';
-        $this->port      = (int)($config['smtp_port'] ?? 465);
-        $this->user      = trim($config['smtp_user']  ?? '');
-        $this->pass      = str_replace(' ', '', trim($config['smtp_pass']  ?? ''));
-        $this->fromName  = $config['from_name']  ?? 'StudyHub';
-        $this->configured = (bool)($config['configured'] ?? false);
+        $this->host     = $config['smtp_host'] ?? 'smtp.gmail.com';
+        $this->port     = (int)($config['smtp_port'] ?? 465);
+        $this->fromName = $config['from_name'] ?? 'StudyHub';
+
+        // Per-student credentials override the config file
+        if (!empty($smtpEmail) && !empty($smtpPassword)) {
+            $this->user = trim($smtpEmail);
+            $this->pass = str_replace(' ', '', trim($smtpPassword));
+        } else {
+            $this->user = trim($config['smtp_user'] ?? '');
+            $this->pass = str_replace(' ', '', trim($config['smtp_pass'] ?? ''));
+        }
     }
 
     /** Check whether SMTP credentials have been supplied */
     public function isConfigured() {
-        return $this->configured && !empty($this->user) && !empty($this->pass);
+        return !empty($this->user) && !empty($this->pass);
+    }
+
+    /** Return the sender address being used */
+    public function getSenderEmail() {
+        return $this->user;
     }
 
     /**
@@ -40,11 +60,11 @@ class StudyHubMailer {
         if (!$this->isConfigured()) {
             return [
                 'success' => false,
-                'error'   => 'SMTP not configured. Edit backend/email_config.php with your credentials and set configured to true.'
+                'error'   => 'SMTP not configured. Go to Settings → Notifications and enter your Gmail address and App Password.'
             ];
         }
 
-        // SSL context (disable peer verification for local dev)
+        // SSL context (disable peer verification for local dev / shared hosting)
         $ctx = stream_context_create([
             'ssl' => [
                 'verify_peer'       => false,
@@ -71,7 +91,7 @@ class StudyHubMailer {
             $auth = $this->cmd($socket, base64_encode($this->pass));
 
             if (strpos($auth, '235') === false) {
-                throw new Exception('SMTP authentication failed. Server response: ' . trim($auth));
+                throw new Exception('SMTP authentication failed. Please check your Gmail address and App Password in Settings → Notifications.');
             }
 
             $this->cmd($socket, "MAIL FROM:<{$this->user}>");
