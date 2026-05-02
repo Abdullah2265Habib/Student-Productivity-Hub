@@ -75,6 +75,9 @@
                         <button class="settings-tab" data-target="security-section">
                             <i class="fas fa-shield-alt"></i> Security
                         </button>
+                        <button class="settings-tab" data-target="notifications-section">
+                            <i class="fas fa-bell"></i> Notifications
+                        </button>
                     </div>
 
                     <!-- Settings Content -->
@@ -158,6 +161,119 @@
                                         </button>
                                     </div>
                                 </form>
+                            </div>
+                        </section>
+
+                        <!-- Notifications Section -->
+                        <section class="settings-section" id="notifications-section">
+                            <div class="card card-pad">
+                                <h3 class="section-title"><i class="fas fa-bell"></i> Email Notifications</h3>
+                                <p class="section-desc">Get email reminders when your assignment or goal deadlines are approaching.</p>
+
+                                <!-- SMTP Status Banner -->
+                                <div class="notif-smtp-status" id="smtpStatus">
+                                    <div class="smtp-icon"><i class="fas fa-spinner fa-spin"></i></div>
+                                    <div class="smtp-text">Checking email configuration…</div>
+                                </div>
+
+                                <form id="notifForm" class="settings-form" style="max-width:100%;">
+                                    <!-- Master toggle -->
+                                    <div class="notif-toggle-row">
+                                        <div class="notif-toggle-info">
+                                            <strong>Enable Notifications</strong>
+                                            <span>Receive email alerts for upcoming deadlines</span>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="notifEnabled" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+
+                                    <div class="notif-options" id="notifOptions">
+                                        <!-- Days before -->
+                                        <div class="notif-option-card">
+                                            <div class="notif-option-icon" style="background:var(--info-bg);color:var(--info);">
+                                                <i class="fas fa-calendar-day"></i>
+                                            </div>
+                                            <div class="notif-option-body">
+                                                <label for="notifDays">Notify me this many days before deadline</label>
+                                                <div class="notif-days-picker">
+                                                    <button type="button" class="days-btn" id="daysMinus"><i class="fas fa-minus"></i></button>
+                                                    <span class="days-value" id="daysValue">3</span>
+                                                    <span class="days-label">days</span>
+                                                    <button type="button" class="days-btn" id="daysPlus"><i class="fas fa-plus"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Assignment toggle -->
+                                        <div class="notif-toggle-row sub">
+                                            <div class="notif-toggle-info">
+                                                <strong><i class="fas fa-tasks" style="color:var(--primary);margin-right:6px;"></i>Assignments</strong>
+                                                <span>Notify when assignment due dates are near</span>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" id="notifAssignments" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+
+                                        <!-- Goals toggle -->
+                                        <div class="notif-toggle-row sub">
+                                            <div class="notif-toggle-info">
+                                                <strong><i class="fas fa-bullseye" style="color:var(--violet);margin-right:6px;"></i>Goals</strong>
+                                                <span>Notify when goal target dates are near</span>
+                                            </div>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" id="notifGoals" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions" style="display:flex;gap:.75rem;flex-wrap:wrap;">
+                                        <button type="submit" class="btn btn-primary" id="saveNotifBtn">
+                                            <i class="fas fa-save"></i> Save Preferences
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Test & Run Section -->
+                            <div class="card card-pad" style="margin-top:1.5rem;">
+                                <h3 class="section-title"><i class="fas fa-paper-plane"></i> Test & Run</h3>
+                                <p class="section-desc">Verify your email setup or manually trigger a notification check.</p>
+
+                                <div class="notif-actions-grid">
+                                    <div class="notif-action-card">
+                                        <div class="notif-action-icon" style="background:linear-gradient(135deg,#2563eb,#3b82f6);">
+                                            <i class="fas fa-envelope"></i>
+                                        </div>
+                                        <div class="notif-action-body">
+                                            <strong>Send Test Email</strong>
+                                            <span>Send a test notification to your email address to verify the SMTP setup is working.</span>
+                                        </div>
+                                        <button type="button" class="btn btn-primary" id="testEmailBtn">
+                                            <i class="fas fa-paper-plane"></i> Send Test
+                                        </button>
+                                    </div>
+
+                                    <div class="notif-action-card">
+                                        <div class="notif-action-icon" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </div>
+                                        <div class="notif-action-body">
+                                            <strong>Check Deadlines Now</strong>
+                                            <span>Manually run the notification check for all students with upcoming deadlines.</span>
+                                        </div>
+                                        <button type="button" class="btn" id="runCronBtn" style="border-color:var(--violet);color:var(--violet);">
+                                            <i class="fas fa-play"></i> Run Now
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Result display -->
+                                <div class="notif-result" id="notifResult" style="display:none;"></div>
                             </div>
                         </section>
 
