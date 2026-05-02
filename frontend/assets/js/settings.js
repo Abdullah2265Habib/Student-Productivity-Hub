@@ -86,10 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     profileForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const name = document.getElementById('updateName').value.trim();
         const email = document.getElementById('updateEmail').value.trim();
 
-        if (!name || !email) {
+        if (!email) {
             showToast('error', 'Validation Error', 'Please fill in all fields.');
             return;
         }
@@ -99,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const formData = new FormData();
         formData.append('action', 'update_profile');
-        formData.append('name', name);
         formData.append('email', email);
 
         fetch('../../backend/update_settings.php', {
@@ -114,9 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 showToast('success', 'Profile Updated', 'Your personal information has been saved.');
                 // Update UI visually
-                document.getElementById('mainName').textContent = name;
                 document.getElementById('mainEmail').textContent = email;
-                document.getElementById('sidebarName').textContent = name;
                 const initial = name.charAt(0).toUpperCase();
                 document.getElementById('mainAvatar').textContent = initial;
                 document.getElementById('sidebarAvatar').textContent = initial;
