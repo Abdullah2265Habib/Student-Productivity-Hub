@@ -55,6 +55,7 @@ const viewerReadTime   = document.getElementById('viewerReadTime');
 const viewerBody       = document.getElementById('viewerBody');
 const viewerEditBtn    = document.getElementById('viewerEditBtn');
 const viewerDeleteBtn  = document.getElementById('viewerDeleteBtn');
+const viewerShareBtn   = document.getElementById('viewerShareBtn');
 
 const editModalOverlay  = document.getElementById('editModalOverlay');
 const editNoteForm      = document.getElementById('editNoteForm');
@@ -75,6 +76,14 @@ const closeEditPdfModal   = document.getElementById('closeEditPdfModal');
 const editPdfCancelBtn    = document.getElementById('editPdfCancelBtn');
 const editPdfSubmitBtn    = document.getElementById('editPdfSubmitBtn');
 const editPdfNoteId       = document.getElementById('editPdfNoteId');
+
+const shareModalOverlay   = document.getElementById('shareModalOverlay');
+const shareNoteForm       = document.getElementById('shareNoteForm');
+const shareNoteId         = document.getElementById('shareNoteId');
+const shareEmail          = document.getElementById('shareEmail');
+const closeShareModal     = document.getElementById('closeShareModal');
+const shareCancelBtn      = document.getElementById('shareCancelBtn');
+const shareSubmitBtn      = document.getElementById('shareSubmitBtn');
 
 let editDroppedFile = null;
 
@@ -314,6 +323,7 @@ function bindEvents() {
             if (modalOverlay.classList.contains('open')) closeModal();
             if (editModalOverlay.classList.contains('open')) closeEditModalFn();
             if (editPdfModalOverlay.classList.contains('open')) closeEditPdfModalFn();
+            if (shareModalOverlay.classList.contains('open')) closeShareModalFn();
         }
     });
 
@@ -371,6 +381,14 @@ function bindEvents() {
     });
     editPdfRemoveFile.addEventListener('click', clearEditPdfFileChosen);
 
+    /* ── Share modal events ── */
+    closeShareModal.addEventListener('click', closeShareModalFn);
+    shareCancelBtn.addEventListener('click',  closeShareModalFn);
+    shareModalOverlay.addEventListener('click', e => {
+        if (e.target === shareModalOverlay) closeShareModalFn();
+    });
+    shareNoteForm.addEventListener('submit', submitShareNote);
+
     /* ── Viewer panel buttons ── */
     viewerEditBtn.addEventListener('click', () => {
         if (!selectedNoteId) return;
@@ -384,6 +402,9 @@ function bindEvents() {
     });
     viewerDeleteBtn.addEventListener('click', () => {
         if (selectedNoteId) deleteNote(selectedNoteId);
+    });
+    viewerShareBtn.addEventListener('click', () => {
+        if (selectedNoteId) openShareModal(selectedNoteId);
     });
 }
 
@@ -730,6 +751,59 @@ async function deleteNote(id) {
         }
     } catch (err) {
         showToast('Network error: ' + err.message, 'error');
+    }
+}
+
+/* ══════════════════════════════════════════════
+   SHARE — NOTE
+   ══════════════════════════════════════════════ */
+function openShareModal(id) {
+    shareNoteId.value = id;
+    shareEmail.value = '';
+    shareModalOverlay.classList.add('open');
+    setTimeout(() => shareEmail.focus(), 100);
+}
+
+function closeShareModalFn() {
+    shareModalOverlay.classList.remove('open');
+    setTimeout(() => {
+        shareNoteForm.reset();
+        shareNoteId.value = '';
+    }, 300);
+}
+
+async function submitShareNote(e) {
+    e.preventDefault();
+    const id = shareNoteId.value;
+    const email = shareEmail.value.trim();
+    if (!email) { showToast('Please enter a student email.', 'error'); return; }
+
+    setLoading(shareSubmitBtn, true, 'Sharing…');
+    const fd = new FormData();
+    fd.append('note_id', id);
+    fd.append('target_email', email);
+
+    try {
+        const res = await fetch(`${API}/share_note.php`, {
+            method: 'POST',
+            body: fd,
+            credentials: 'include'
+        });
+        const raw = await res.text();
+        let data;
+        try { data = JSON.parse(raw); }
+        catch { showToast('Server error: ' + raw.slice(0, 120), 'error'); return; }
+
+        if (data.success) {
+            closeShareModalFn();
+            showToast('Note shared successfully!', 'success');
+        } else {
+            showToast(data.message || 'Could not share note.', 'error');
+        }
+    } catch (err) {
+        showToast('Network error: ' + err.message, 'error');
+    } finally {
+        setLoading(shareSubmitBtn, false, '<i class="fas fa-paper-plane"></i> Share');
     }
 }
 

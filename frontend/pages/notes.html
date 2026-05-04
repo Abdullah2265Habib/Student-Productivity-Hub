@@ -121,6 +121,7 @@
                                 <span class="read-time-badge" id="viewerReadTime" style="display:none;"></span>
                             </div>
                             <div class="viewer-actions">
+                                <button class="btn" id="viewerShareBtn"><i class="fas fa-share"></i> Share</button>
                                 <button class="btn" id="viewerEditBtn"><i class="fas fa-edit"></i> Edit</button>
                                 <button class="btn btn-danger" id="viewerDeleteBtn"><i class="fas fa-trash"></i>
                                     Delete</button>
@@ -282,6 +283,37 @@
                         <button type="button" class="btn btn-ghost" id="editPdfCancelBtn">Cancel</button>
                         <button type="submit" class="btn btn-primary" id="editPdfSubmitBtn"><i
                                 class="fas fa-upload"></i> Replace PDF</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SHARE NOTE MODAL -->
+    <div class="modal-overlay" id="shareModalOverlay">
+        <div class="modal">
+            <div class="modal-form visible">
+                <div class="modal-form-header">
+                    <h2><i class="fas fa-share"></i> Share Note</h2>
+                    <button class="close-modal-btn" id="closeShareModal" title="Close"><i
+                            class="fas fa-times"></i></button>
+                </div>
+                <form id="shareNoteForm">
+                    <input type="hidden" id="shareNoteId">
+                    <div class="modal-form-body">
+                        <p style="color:var(--text-3);font-size:.85rem;margin-bottom:1rem;">
+                            <i class="fas fa-info-circle" style="color:var(--primary)"></i>
+                            Share this note with another student by entering their email address.
+                        </p>
+                        <div class="form-group">
+                            <label for="shareEmail">Student Email <span style="color:var(--danger)">*</span></label>
+                            <input type="email" id="shareEmail" name="email" placeholder="student@example.com" required>
+                        </div>
+                    </div>
+                    <div class="modal-form-footer">
+                        <button type="button" class="btn btn-ghost" id="shareCancelBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="shareSubmitBtn"><i
+                                class="fas fa-paper-plane"></i> Share</button>
                     </div>
                 </form>
             </div>
