@@ -229,7 +229,7 @@
            ========================================== */
         (function () {
             const bulb = document.getElementById('lightbulb');
-            // Maximum distance (px) at which glow starts
+            const icon = bulb.querySelector('i'); // target the icon itself for inner glow
             const MAX_DIST = 350;
 
             function getBulbCenter() {
@@ -240,54 +240,66 @@
                 };
             }
 
+            function reset() {
+                bulb.style.color   = '';
+                bulb.style.opacity = '';
+                bulb.style.filter  = '';
+                icon.style.textShadow = '';
+                icon.style.filter     = '';
+            }
+
             document.addEventListener('mousemove', function (e) {
                 const center = getBulbCenter();
                 const dx = e.clientX - center.x;
                 const dy = e.clientY - center.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
 
-                // t = 1 when cursor is on the bulb, 0 when at MAX_DIST or beyond
+                // t = 1 at bulb centre, 0 beyond MAX_DIST
                 const t = Math.max(0, 1 - dist / MAX_DIST);
 
-                if (t === 0) {
-                    // Fully off — restore default dim state
-                    bulb.style.color   = '';
-                    bulb.style.opacity = '';
-                    bulb.style.filter  = '';
-                    bulb.style.textShadow = '';
-                    return;
-                }
+                if (t === 0) { reset(); return; }
 
-                // Interpolate hue: indigo (#6366f1) → yellow (#facc15)
-                // We drive this purely with filter/opacity so we don't need
-                // to fight the CSS animation on color.
-                const opacity  = 0.1 + t * 0.9;             // 0.1 → 1.0
-                const glow1r   = Math.round(t * 60);         // yellow glow radius 1
-                const glow2r   = Math.round(t * 120);        // yellow glow radius 2
-                const glow1a   = (0.4 + t * 0.5).toFixed(2); // alpha 0.4→0.9
-                const glow2a   = (0.2 + t * 0.4).toFixed(2);
-                const ts1r     = Math.round(t * 40);
-                const ts2r     = Math.round(t * 90);
-                const ts3r     = Math.round(t * 140);
-
-                // Blend color from primary (#6366f1) toward yellow (#facc15)
+                // ── Color: indigo → warm yellow ──────────────────────────
                 const r = Math.round(99  + t * (250 - 99));
                 const g = Math.round(102 + t * (204 - 102));
                 const b = Math.round(241 + t * (21  - 241));
-
                 bulb.style.color   = `rgb(${r},${g},${b})`;
-                bulb.style.opacity = opacity;
-                bulb.style.filter  = `drop-shadow(0 0 ${glow1r}px rgba(250,204,21,${glow1a})) drop-shadow(0 0 ${glow2r}px rgba(250,204,21,${glow2a}))`;
-                bulb.style.textShadow = `0 0 ${ts1r}px rgba(250,204,21,${glow1a}), 0 0 ${ts2r}px rgba(250,204,21,${glow2a}), 0 0 ${ts3r}px rgba(250,204,21,0.2)`;
+                bulb.style.opacity = 0.1 + t * 0.9;   // dim → full brightness
+
+                // ── Outer halo on the wrapper div ────────────────────────
+                const h1 = Math.round(t * 80);
+                const h2 = Math.round(t * 160);
+                const h3 = Math.round(t * 260);
+                const ha1 = (t * 0.95).toFixed(2);
+                const ha2 = (t * 0.70).toFixed(2);
+                const ha3 = (t * 0.40).toFixed(2);
+                bulb.style.filter =
+                    `drop-shadow(0 0 ${h1}px rgba(250,204,21,${ha1}))` +
+                    ` drop-shadow(0 0 ${h2}px rgba(250,204,21,${ha2}))` +
+                    ` drop-shadow(0 0 ${h3}px rgba(250,204,21,${ha3}))`;
+
+                // ── Inner glow directly on the <i> icon ──────────────────
+                // text-shadow makes the font glyph itself radiate light
+                const g1 = Math.round(t * 20);
+                const g2 = Math.round(t * 50);
+                const g3 = Math.round(t * 100);
+                const g4 = Math.round(t * 180);
+                const ga1 = (1 * t).toFixed(2);
+                const ga2 = (0.9 * t).toFixed(2);
+                const ga3 = (0.65 * t).toFixed(2);
+                const ga4 = (0.35 * t).toFixed(2);
+                icon.style.textShadow =
+                    `0 0 ${g1}px rgba(255,255,200,${ga1}),` +
+                    ` 0 0 ${g2}px rgba(250,204,21,${ga1}),` +
+                    ` 0 0 ${g3}px rgba(250,204,21,${ga2}),` +
+                    ` 0 0 ${g4}px rgba(250,180,0,${ga3}),` +
+                    ` 0 0 ${Math.round(t*260)}px rgba(250,150,0,${ga4})`;
+
+                // brightness boost so the icon core looks white-hot near cursor
+                icon.style.filter = `brightness(${1 + t * 3})`;
             });
 
-            // When mouse leaves the window entirely, reset
-            document.addEventListener('mouseleave', function () {
-                bulb.style.color      = '';
-                bulb.style.opacity    = '';
-                bulb.style.filter     = '';
-                bulb.style.textShadow = '';
-            });
+            document.addEventListener('mouseleave', reset);
         })();
     </script>
 </body>
