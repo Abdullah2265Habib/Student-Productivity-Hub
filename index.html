@@ -160,7 +160,7 @@
                     </ul>
                 </div>
                 <div class="about-image">
-                    <div class="about-illustration" id="lightbulb" onclick="this.classList.toggle('bulb-on')" title="Click to toggle!">
+                    <div class="about-illustration" id="lightbulb" title="Hover near me!">
                         <i class="fas fa-lightbulb"></i>
                     </div>
                 </div>
@@ -223,5 +223,72 @@
     </footer>
 
     <script src="frontend/assets/js/script.js"></script>
+    <script>
+        /* ==========================================
+           Proximity Glow — Lightbulb
+           ========================================== */
+        (function () {
+            const bulb = document.getElementById('lightbulb');
+            // Maximum distance (px) at which glow starts
+            const MAX_DIST = 350;
+
+            function getBulbCenter() {
+                const rect = bulb.getBoundingClientRect();
+                return {
+                    x: rect.left + rect.width / 2,
+                    y: rect.top  + rect.height / 2
+                };
+            }
+
+            document.addEventListener('mousemove', function (e) {
+                const center = getBulbCenter();
+                const dx = e.clientX - center.x;
+                const dy = e.clientY - center.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                // t = 1 when cursor is on the bulb, 0 when at MAX_DIST or beyond
+                const t = Math.max(0, 1 - dist / MAX_DIST);
+
+                if (t === 0) {
+                    // Fully off — restore default dim state
+                    bulb.style.color   = '';
+                    bulb.style.opacity = '';
+                    bulb.style.filter  = '';
+                    bulb.style.textShadow = '';
+                    return;
+                }
+
+                // Interpolate hue: indigo (#6366f1) → yellow (#facc15)
+                // We drive this purely with filter/opacity so we don't need
+                // to fight the CSS animation on color.
+                const opacity  = 0.1 + t * 0.9;             // 0.1 → 1.0
+                const glow1r   = Math.round(t * 60);         // yellow glow radius 1
+                const glow2r   = Math.round(t * 120);        // yellow glow radius 2
+                const glow1a   = (0.4 + t * 0.5).toFixed(2); // alpha 0.4→0.9
+                const glow2a   = (0.2 + t * 0.4).toFixed(2);
+                const ts1r     = Math.round(t * 40);
+                const ts2r     = Math.round(t * 90);
+                const ts3r     = Math.round(t * 140);
+
+                // Blend color from primary (#6366f1) toward yellow (#facc15)
+                const r = Math.round(99  + t * (250 - 99));
+                const g = Math.round(102 + t * (204 - 102));
+                const b = Math.round(241 + t * (21  - 241));
+
+                bulb.style.color   = `rgb(${r},${g},${b})`;
+                bulb.style.opacity = opacity;
+                bulb.style.filter  = `drop-shadow(0 0 ${glow1r}px rgba(250,204,21,${glow1a})) drop-shadow(0 0 ${glow2r}px rgba(250,204,21,${glow2a}))`;
+                bulb.style.textShadow = `0 0 ${ts1r}px rgba(250,204,21,${glow1a}), 0 0 ${ts2r}px rgba(250,204,21,${glow2a}), 0 0 ${ts3r}px rgba(250,204,21,0.2)`;
+            });
+
+            // When mouse leaves the window entirely, reset
+            document.addEventListener('mouseleave', function () {
+                bulb.style.color      = '';
+                bulb.style.opacity    = '';
+                bulb.style.filter     = '';
+                bulb.style.textShadow = '';
+            });
+        })();
+    </script>
 </body>
 </html>
