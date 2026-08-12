@@ -295,8 +295,8 @@
                     ` 0 0 ${g4}px rgba(250,180,0,${ga3}),` +
                     ` 0 0 ${Math.round(t*260)}px rgba(250,150,0,${ga4})`;
 
-                // brightness boost so the icon core looks white-hot near cursor
-                icon.style.filter = `brightness(${1 + t * 3})`;
+                // brightness boost — capped at 1.8 so the icon stays vivid yellow, not white-out
+                icon.style.filter = `brightness(${(1 + t * 0.8).toFixed(2)})`;
             });
 
             document.addEventListener('mouseleave', reset);

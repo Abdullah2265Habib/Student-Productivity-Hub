@@ -350,7 +350,7 @@ body {
     opacity: 0.1;
     animation: float 3s ease-in-out infinite;
     cursor: pointer;
-    transition: color 0.4s ease, opacity 0.4s ease, filter 0.4s ease, text-shadow 0.4s ease;
+    /* transitions removed — JS drives glow every frame */
     user-select: none;
 }
 
